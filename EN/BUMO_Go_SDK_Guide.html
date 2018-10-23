@@ -1,0 +1,4584 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Bumo Go SDK Guide &#8212; TRY 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="bumo-go-sdk-guide">
+<h1>Bumo Go SDK Guide<a class="headerlink" href="#bumo-go-sdk-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>This document details the common interfaces of the Bumo Go SDK, making
+it easier for developers to operate and query the BU blockchain.</p>
+</div>
+<div class="section" id="import-of-packages">
+<h2>Import of Packages<a class="headerlink" href="#import-of-packages" title="Permalink to this headline">¶</a></h2>
+<p>The packages on which the projects depend are in the src folder, you can get the packages as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">to</span> <span class="n">get</span> <span class="n">the</span> <span class="n">packages</span><span class="o">.</span>
+<span class="n">go</span> <span class="n">get</span> <span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bumoproject</span><span class="o">/</span><span class="n">bumo</span><span class="o">-</span><span class="n">sdk</span><span class="o">-</span><span class="n">go</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="terminology">
+<h2>Terminology<a class="headerlink" href="#terminology" title="Permalink to this headline">¶</a></h2>
+<p>This section gives details about the terms used in this document.</p>
+<p><strong>Operate the BU Blockchain</strong></p>
+<p>Operate the BU Blockchain refers to writing data to or modifying data in
+the BU blockchain.</p>
+<p><strong>Submit Transactions</strong></p>
+<p>Submit Transactions refers to sending a request to write data to or
+modify data in the BU blockchain.</p>
+<p><strong>Query the BU Blockchain</strong></p>
+<p>Query the BU Blockchain refers to querying data in the BU blockchain.</p>
+<p><strong>Account Services</strong></p>
+<p>Account Services provide account validity check and query interfaces.</p>
+<p><strong>Asset Services</strong></p>
+<p>Asset Services provide asset-related query interfaces.</p>
+<p><strong>Ctp10Token Services</strong></p>
+<p>Ctp10Token Services provide validity check and query interfaces
+related to contract assets.</p>
+<p><strong>Contract Services</strong></p>
+<p>Contract Services provide contract-related validity check and query
+interfaces.</p>
+<p><strong>Transaction Services</strong></p>
+<p>Transaction Services provide query interfaces and a submit transaction interface.</p>
+<p><strong>Block Services</strong></p>
+<p>Block Services provide interfaces to query the block.</p>
+<p><strong>Account Nonce Value</strong></p>
+<p>Account Nonce Value is used to identify the order in which the
+transaction is executed when the user submits the transaction.</p>
+</div>
+<div class="section" id="format-of-request-parameters-and-response-data">
+<h2>Format of Request Parameters and Response Data<a class="headerlink" href="#format-of-request-parameters-and-response-data" title="Permalink to this headline">¶</a></h2>
+<p>This section details the format of the request parameters and response
+data.</p>
+<div class="section" id="request-parameters">
+<h3>Request Parameters<a class="headerlink" href="#request-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The class name of the request parameter of the interface is composed of
+<strong>Service Name+Method Name+Request</strong>. For example, the request parameter
+format of the <code class="docutils literal notranslate"><span class="pre">getInfo</span></code> interface in Account Services is
+<code class="docutils literal notranslate"><span class="pre">AccountGetInfoRequest</span></code>.</p>
+<p>The member of the request parameter is the member of the input parameter
+of each interface. For example, if the input parameter of the <code class="docutils literal notranslate"><span class="pre">getInfo</span></code>
+interface in Account Services is <code class="docutils literal notranslate"><span class="pre">address</span></code>, the complete structure of
+the request parameters of the interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">AccountGetInfoRequest</span> <span class="n">struct</span> <span class="p">{</span>
+<span class="n">address</span> <span class="n">string</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="response-data">
+<h3>Response Data<a class="headerlink" href="#response-data" title="Permalink to this headline">¶</a></h3>
+<p>The members of the response data include error codes, error
+descriptions, and return results. The class name of the response data of the interface is composed of
+<strong>Service Name+Method Name+Response</strong>.</p>
+<p>For example, the members of the
+response data of the <code class="docutils literal notranslate"><span class="pre">Account.GetInfo()</span></code> is <code class="docutils literal notranslate"><span class="pre">AccountGetInfoResponse</span></code> :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">AccountGetInfoResponse</span> <span class="n">struct</span> <span class="p">{</span>
+  <span class="n">ErrorCode</span> <span class="nb">int</span>
+  <span class="n">ErrorDesc</span> <span class="n">string</span>
+  <span class="n">Result</span>  <span class="n">AccountGetInfoResult</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ul class="last simple">
+<li>ErrorCode:  error code. 0 means no error, greater than 0 means there is an error</li>
+<li>ErrorDesc: error description. null means no error, otherwise there is an error</li>
+<li>Result: returns the result. The class name of the result structure is <strong>Service Name+Method Name+Result</strong> . For example, the result class name of the <code class="docutils literal notranslate"><span class="pre">Account.GetNonce()</span></code> interface in Account Services is AccountGetNonceResult.</li>
+</ul>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">AccountGetNonceResult</span> <span class="n">struct</span> <span class="p">{</span>
+  <span class="n">Nonce</span> <span class="n">int64</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>This section describes the process of using the SDK. First you need to
+generate the SDK instance and then call the interface of the
+corresponding service. Services include account services, asset
+services,contract services, transaction services,
+and block services. Interfaces are classified into public-private key
+address interfaces, validity check interfaces, query interfaces, and
+transaction-related interfaces.</p>
+<div class="section" id="import-of-the-packages">
+<h3>Import of The Packages<a class="headerlink" href="#import-of-the-packages" title="Permalink to this headline">¶</a></h3>
+<p>Import the packages before generating the SDK instance.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">import</span><span class="p">(</span>
+  <span class="s2">&quot;github.com/bumoproject/bumo-sdk-go/src/model&quot;</span>
+  <span class="s2">&quot;github.com/bumoproject/bumo-sdk-go/src/sdk&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generating-sdk-instances">
+<h3>Generating SDK Instances<a class="headerlink" href="#generating-sdk-instances" title="Permalink to this headline">¶</a></h3>
+<p>The method to initialize SDK structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">testSdk</span> <span class="n">sdk</span><span class="o">.</span><span class="n">sdk</span>
+</pre></div>
+</div>
+<p>Call the Init interface of SDK structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="p">:</span><span class="o">=</span><span class="s2">&quot;http://seed1.bumotest.io:26002&quot;</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">SDKInitRequest</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetUrl</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Init</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generating-public-private-keys-and-addresses">
+<h3>Generating Public-Private Keys and Addresses<a class="headerlink" href="#generating-public-private-keys-and-addresses" title="Permalink to this headline">¶</a></h3>
+<p>Call the Create function of Account to gerenate an account:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span><span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">Create</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="checking-validity">
+<h3>Checking Validity<a class="headerlink" href="#checking-validity" title="Permalink to this headline">¶</a></h3>
+<p>The validity check interface is used to verify the validity of the
+information, and the information validity check can be achieved by
+directly invoking the corresponding interface. For example, to verify
+the validity of the account address, the specific call is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">Initialize</span> <span class="n">request</span> <span class="n">parameters</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountCheckValidRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="o">//</span><span class="n">Call</span> <span class="n">the</span> <span class="n">validity</span> <span class="n">check</span> <span class="n">interface</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">CheckValid</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="querying">
+<h3>Querying<a class="headerlink" href="#querying" title="Permalink to this headline">¶</a></h3>
+<p>The data query can be implemented by directly invoking the corresponding
+interface.For example, to query the account information, the specific
+call is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">Initialize</span> <span class="n">request</span> <span class="n">parameters</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetInfoRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="o">//</span><span class="n">Call</span> <span class="n">the</span> <span class="n">getInfo</span> <span class="n">interface</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="submitting-transactions">
+<h3>Submitting Transactions<a class="headerlink" href="#submitting-transactions" title="Permalink to this headline">¶</a></h3>
+<p>The process of submitting transactions consists of the following steps:</p>
+<p><a class="reference internal" href="#obtaining-the-nonce-value-of-the-account">1. Obtaining the Nonce Value of the Account</a></p>
+<p><a class="reference internal" href="#building-operations">2. Building Operations</a></p>
+<p><a class="reference internal" href="#building-transaction-blob">3. Building Transaction Blob</a></p>
+<p><a class="reference internal" href="#signing-transactions">4. Signing Transactions</a></p>
+<p><a class="reference internal" href="#broadcasting-transactions">5. Broadcasting Transactions</a></p>
+<div class="section" id="obtaining-the-nonce-value-of-the-account">
+<h4>1. Obtaining the Nonce Value of the Account<a class="headerlink" href="#obtaining-the-nonce-value-of-the-account" title="Permalink to this headline">¶</a></h4>
+<p>The developer can maintain the nonce value of each account, and
+automatically increments by 1 for the nounce value after submitting a
+transaction, so that multiple transactions can be sent in a short time;
+otherwise, the nonce value of the account must be added 1 after the
+execution of the previous transaction is completed. The specific
+interface call is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">Initialize</span> <span class="n">request</span> <span class="n">parameters</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetNonceRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="o">//</span><span class="n">Call</span> <span class="n">the</span> <span class="n">getNonce</span> <span class="n">interface</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetNonce</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-operations">
+<h4>2. Building Operations<a class="headerlink" href="#building-operations" title="Permalink to this headline">¶</a></h4>
+<p>The operations refer to some of the actions that are done in the
+transaction to facilitate serialization of transactions and evaluation
+of fees. For example, to build an operation to send BU
+(BUSendOperation), the specific interface call is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">buSendOperation</span> <span class="n">model</span><span class="o">.</span><span class="n">BUSendOperation</span>
+<span class="n">buSendOperation</span><span class="o">.</span><span class="n">Init</span><span class="p">()</span>
+<span class="n">var</span> <span class="n">amount</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQVU86Jm4FeRW4JcQTD9Rx9NkUkHikYGp6z&quot;</span>
+<span class="n">buSendOperation</span><span class="o">.</span><span class="n">SetAmount</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="n">buSendOperation</span><span class="o">.</span><span class="n">SetDestAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-transaction-blob">
+<h4>3. Building Transaction Blob<a class="headerlink" href="#building-transaction-blob" title="Permalink to this headline">¶</a></h4>
+<p>The building transaction blob interface is for generating transaction blob string. The specific interface call is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">Initialize</span> <span class="n">request</span> <span class="n">parameters</span>
+<span class="n">var</span> <span class="n">reqDataBlob</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionBuildBlobRequest</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetSourceAddress</span><span class="p">(</span><span class="n">sourceAddress</span><span class="p">)</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetFeeLimit</span><span class="p">(</span><span class="n">feeLimit</span><span class="p">)</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetGasPrice</span><span class="p">(</span><span class="n">gasPrice</span><span class="p">)</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetNonce</span><span class="p">(</span><span class="n">senderNonce</span><span class="p">)</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetOperation</span><span class="p">(</span><span class="n">buSendOperation</span><span class="p">)</span>
+<span class="o">//</span><span class="n">Call</span> <span class="n">the</span> <span class="n">BuildBlob</span> <span class="n">interface</span>
+<span class="n">resDataBlob</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">BuildBlob</span><span class="p">(</span><span class="n">reqDataBlob</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="last">The unit of gasPrice and feeLimit is MO，and 1 BU =10^8 MO.</p>
+</div>
+</div>
+<div class="section" id="signing-transactions">
+<h4>4. Signing Transactions<a class="headerlink" href="#signing-transactions" title="Permalink to this headline">¶</a></h4>
+<p>The signing transaction interface is used by the transaction initiator
+to sign the transaction using the private key of the account. The specific
+interface call is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">Initialize</span> <span class="n">request</span> <span class="n">parameters</span>
+<span class="n">PrivateKey</span> <span class="p">:</span><span class="o">=</span> <span class="p">[]</span><span class="n">string</span><span class="p">{</span><span class="s2">&quot;privbUPxs6QGkJaNdgWS2hisny6ytx1g833cD7V9C3YET9mJ25wdcq6h&quot;</span><span class="p">}</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSignRequest</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlob</span><span class="p">(</span><span class="n">resDataBlob</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Blob</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetPrivateKeys</span><span class="p">(</span><span class="n">PrivateKey</span><span class="p">)</span>
+<span class="o">//</span><span class="n">Call</span> <span class="n">the</span> <span class="n">Sign</span> <span class="n">interface</span>
+<span class="n">resDataSign</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">Sign</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="broadcasting-transactions">
+<h4>5. Broadcasting Transactions<a class="headerlink" href="#broadcasting-transactions" title="Permalink to this headline">¶</a></h4>
+<p>The broadcasting transaction interface is used to send transactions to BU blockchain and trigger the execution of transactions.
+The specific interface call is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">Initialize</span> <span class="n">request</span> <span class="n">parameters</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSubmitRequest</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlob</span><span class="p">(</span><span class="n">resDataBlob</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Blob</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetSignatures</span><span class="p">(</span><span class="n">resDataSign</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Signatures</span><span class="p">)</span>
+<span class="o">//</span><span class="n">Call</span> <span class="n">the</span> <span class="n">Submit</span> <span class="n">interface</span>
+<span class="n">resDataSubmit</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">Submit</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="account-services">
+<h2>Account Services<a class="headerlink" href="#account-services" title="Permalink to this headline">¶</a></h2>
+<p>Account Services provide account-related interfaces, which include seven
+interfaces: <code class="docutils literal notranslate"><span class="pre">CheckValid</span></code>,``Create``,``GetInfo-Account``,``GetNonce``,
+<code class="docutils literal notranslate"><span class="pre">GetBalance-Account</span></code>,``GetAssets`` and <code class="docutils literal notranslate"><span class="pre">GetMetadata</span></code>.</p>
+<div class="section" id="checkvalid">
+<h3>CheckValid<a class="headerlink" href="#checkvalid" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">CheckValid</span></code> interface is used to check the validity of the account address.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CheckValid</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountCheckValidRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">AccountCheckValidResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="14%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>address</td>
+<td>string</td>
+<td>The account address to be checked</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="14%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>IsValid</td>
+<td>string</td>
+<td>Whether the account address is valid</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="30%" />
+<col width="35%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountCheckValidRequest</span>
+<span class="n">address</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">CheckValid</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">IsValid</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create">
+<h3>Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Create</span></code> interface is used to generate private key.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Create</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountCreateResponse</span>
+</pre></div>
+</div>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="24%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>PrivateKey</td>
+<td>string</td>
+<td>Private key</td>
+</tr>
+<tr class="row-odd"><td>PublicKey</td>
+<td>string</td>
+<td>Public key</td>
+</tr>
+<tr class="row-even"><td>Address</td>
+<td>string</td>
+<td>Address</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">Create</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Address:&quot;</span><span class="p">,</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Address</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;PrivateKey:&quot;</span><span class="p">,</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">PrivateKey</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;PublicKey:&quot;</span><span class="p">,</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">PublicKey</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getinfo-account">
+<h3>GetInfo-Account<a class="headerlink" href="#getinfo-account" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetInfo-Account</span></code> interface is used to obtain the specified account information.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetInfo</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetInfoRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetInfoResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="14%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>string</td>
+<td>The account address to be checked</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="16%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>string</td>
+<td>Account address</td>
+</tr>
+<tr class="row-odd"><td>Balance</td>
+<td>int64</td>
+<td>Account balance</td>
+</tr>
+<tr class="row-even"><td>Nonce</td>
+<td>int64</td>
+<td>Account transaction serial number</td>
+</tr>
+<tr class="row-odd"><td>Priv</td>
+<td><a class="reference internal" href="#priv">Priv</a></td>
+<td>Account privilege</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="20%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the blockchain</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetInfoRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Info:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="interface-types">
+<h4>Interface Types<a class="headerlink" href="#interface-types" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="priv">
+<h5>Priv<a class="headerlink" href="#priv" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="33%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MasterWeight</td>
+<td>int64</td>
+<td>Account weight</td>
+</tr>
+<tr class="row-odd"><td>Signers</td>
+<td>[] <a class="reference internal" href="#signer">Signer</a></td>
+<td>Signer weight list</td>
+</tr>
+<tr class="row-even"><td>Thresholds</td>
+<td><a class="reference internal" href="#threshold">Threshold</a></td>
+<td>Threshold</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="signer">
+<h5>Signer<a class="headerlink" href="#signer" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="14%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>string</td>
+<td>The account address of the signer</td>
+</tr>
+<tr class="row-odd"><td>Weight</td>
+<td>int64</td>
+<td>Signer weight</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="threshold">
+<h5>Threshold<a class="headerlink" href="#threshold" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="23%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TxThreshold</td>
+<td>string</td>
+<td>Transaction default threshold</td>
+</tr>
+<tr class="row-odd"><td>TypeThresholds</td>
+<td><a class="reference internal" href="#typethreshold">TypeThreshold</a></td>
+<td>Thresholds for different types of transactions</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="typethreshold">
+<h5>TypeThreshold<a class="headerlink" href="#typethreshold" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="18%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Type</td>
+<td>int64</td>
+<td>The operation type</td>
+</tr>
+<tr class="row-odd"><td>Threshold</td>
+<td>int64</td>
+<td>The threshold</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="getnonce">
+<h3>GetNonce<a class="headerlink" href="#getnonce" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetNonce</span></code> interface is used to obtain the nonce value of the
+specified account.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetNonce</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetNonceRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetNonceResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="14%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>string</td>
+<td>The account address to be queried</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="12%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Nonce</td>
+<td>Long</td>
+<td>Account transaction serial number</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="20%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetNonceRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Nonce</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getbalance-account">
+<h3>GetBalance-Account<a class="headerlink" href="#getbalance-account" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetBalance-Account</span></code> interface is used to get the Balance value of the specific account.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetBalance</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetBalanceRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetBalanceResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="14%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>string</td>
+<td>The account address to be queried</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="19%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Balance</td>
+<td>int64</td>
+<td>Account balance</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="20%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetBalanceRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetBalance</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Balance&quot;</span><span class="p">,</span> <span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Balance</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getassets">
+<h3>GetAssets<a class="headerlink" href="#getassets" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetAssets</span></code> interface is used to get the asset information of the specific account.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetAssets</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetAssetsRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetAssetsResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="14%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>string</td>
+<td>The account address to be queried</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="38%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Asset</td>
+<td>[] <a class="reference internal" href="#asset">Asset</a></td>
+<td>Account asset</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="20%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetAssetsRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetAssets</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Assets</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Assets:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h4>Interface Types<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="asset">
+<h5>Asset<a class="headerlink" href="#asset" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="18%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Key</td>
+<td><a class="reference internal" href="#key">key</a></td>
+<td>Unique identifier for asset</td>
+</tr>
+<tr class="row-odd"><td>Amount</td>
+<td>int64</td>
+<td>Amount of assets</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="key">
+<h5>Key<a class="headerlink" href="#key" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="14%" />
+<col width="68%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Code</td>
+<td>String</td>
+<td>Asset code</td>
+</tr>
+<tr class="row-odd"><td>Issuer</td>
+<td>String</td>
+<td>The account address for issuing assets</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="getmetadata">
+<h3>GetMetadata<a class="headerlink" href="#getmetadata" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetMetadata</span></code> interface is used to get the Metadata information of the specific account.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetMetadata</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetMetadataRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetMetadataResponse</span>
+</pre></div>
+</div>
+<p>The request parameters are shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="11%" />
+<col width="73%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>String</td>
+<td>Required, the account address to be queried</td>
+</tr>
+<tr class="row-odd"><td>Key</td>
+<td>String</td>
+<td>Optional, metadata keyword, length limit [1, 1024]</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="49%" />
+<col width="28%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Metadatas</td>
+<td>[] <a class="reference internal" href="#metadata-1"><span class="std std-ref">Metadata</span></a></td>
+<td>Account</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="15%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to the network</td>
+</tr>
+<tr class="row-even"><td>INVALID_DATAKEY_ERROR</td>
+<td>11011</td>
+<td>The length of key must be between 1 and 1024</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetMetadataRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQemmMwmRQY1JkcU7w3nhruoX5N3j6C29uo&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Metadatas</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Metadatas:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id2">
+<h4>Interface Types<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="metadata">
+<span id="metadata-1"></span><h5>Metadata<a class="headerlink" href="#metadata" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="22%" />
+<col width="49%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Key</td>
+<td>string</td>
+<td>Metadata keyword</td>
+</tr>
+<tr class="row-odd"><td>Value</td>
+<td>string</td>
+<td>Metadata content</td>
+</tr>
+<tr class="row-even"><td>Version</td>
+<td>int64</td>
+<td>Metadata version</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="asset-services">
+<h2>Asset Services<a class="headerlink" href="#asset-services" title="Permalink to this headline">¶</a></h2>
+<p>Account Services provide an asset-related interface. Currently there is one interface: <code class="docutils literal notranslate"><span class="pre">getInfo</span></code>.</p>
+<div class="section" id="getinfo-asset">
+<h3>GetInfo-Asset<a class="headerlink" href="#getinfo-asset" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetInfo-Asset</span></code> interface is used to obtain the specified asset information of the specified account.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetInfo</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AssetGetInfoRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">AssetGetInfoResponse</span>
+</pre></div>
+</div>
+<p>The request parameters are shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="12%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>String</td>
+<td>Required, the account address to be queried</td>
+</tr>
+<tr class="row-odd"><td>Code</td>
+<td>String</td>
+<td>Required, asset code, length limit [1, 64]</td>
+</tr>
+<tr class="row-even"><td>Issuer</td>
+<td>String</td>
+<td>Required, the account address for issuing assets</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="41%" />
+<col width="34%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Assets</td>
+<td>[] <a class="reference internal" href="#asset">asset</a></td>
+<td>Account asset</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="47%" />
+<col width="20%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect
+to the network</td>
+</tr>
+<tr class="row-even"><td>INVALID_ASSET_CODE_ERROR</td>
+<td>11023</td>
+<td>The length of
+code must
+be between 1 and
+1024</td>
+</tr>
+<tr class="row-odd"><td>INVALID_ISSUER_ADDRESS
+_ERROR</td>
+<td>11027</td>
+<td>Invalid issuer
+address</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AssetGetInfoRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQemmMwmRQY1JkcU7w3nhruoX5N3j6C29uo&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetIssuer</span><span class="p">(</span><span class="s2">&quot;buQnc3AGCo6ycWJCce516MDbPHKjK7ywwkuo&quot;</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetCode</span><span class="p">(</span><span class="s2">&quot;HNC&quot;</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Token</span><span class="o">.</span><span class="n">Asset</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Assets</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Assets:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="contract-services">
+<h2>Contract Services<a class="headerlink" href="#contract-services" title="Permalink to this headline">¶</a></h2>
+<p>Contract Services provide contract-related interfaces and currently have
+one interfaces:<code class="docutils literal notranslate"><span class="pre">GetInfo</span></code>.</p>
+<div class="section" id="getinfo-contract">
+<h3>GetInfo-contract<a class="headerlink" href="#getinfo-contract" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetInfo-contract</span></code> interface is used to get contract information.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetInfo</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ContractGetInfoRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">ContractGetInfoResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="10%" />
+<col width="68%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>contractAddress</td>
+<td>string</td>
+<td>Required, contract address of token to be verified</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="17%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Type</td>
+<td>int64</td>
+<td>Contract type, 0 is default</td>
+</tr>
+<tr class="row-odd"><td>Payload</td>
+<td>string</td>
+<td>Contract code</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="22%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_CONTRACTADDRESS
+_ERROR</td>
+<td>11037</td>
+<td>Invalid contract
+address</td>
+</tr>
+<tr class="row-odd"><td>CONTRACTADDRESS_NOT_CON
+TRACTACCOUNT_ERROR</td>
+<td>11038</td>
+<td>contractAddress
+is not a
+contract account</td>
+</tr>
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect
+to the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">ContractGetInfoRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQfnVYgXuMo3rvCEpKA6SfRrDpaz8D8A9Ea&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Contract</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Contract</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Contract:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="transaction-services">
+<h2>Transaction Services<a class="headerlink" href="#transaction-services" title="Permalink to this headline">¶</a></h2>
+<p>Transaction Services provide transaction-related interfaces and
+currently have five interfaces:<code class="docutils literal notranslate"><span class="pre">EvaluateFee</span></code>,``BuildBlob``,``Sign``,、<code class="docutils literal notranslate"><span class="pre">Submit</span></code> and
+<code class="docutils literal notranslate"><span class="pre">GetInfo-transaction</span></code>.</p>
+<div class="section" id="evaluatefee">
+<h3>EvaluateFee<a class="headerlink" href="#evaluatefee" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">EvaluateFee</span></code> interface implements the cost estimate for the
+transaction.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EvaluateFee</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionEvaluateFeeRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionEvaluateFeeResponse</span>
+</pre></div>
+</div>
+<p>The request parameters are shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="31%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>String</td>
+<td>Required, the source
+account address issuing
+the operation</td>
+</tr>
+<tr class="row-odd"><td>nonce</td>
+<td>int64</td>
+<td>Required, transaction
+serial number to be
+initiated, size limit
+[1,max(int64)]</td>
+</tr>
+<tr class="row-even"><td>operations</td>
+<td>list.List</td>
+<td>Required, list of
+operations to be committed
+which cannot be empty</td>
+</tr>
+<tr class="row-odd"><td>signtureNumber</td>
+<td>string</td>
+<td>Optional, the number of
+people to sign, the
+default is 1, size limit
+[1,max(int32)]</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+<tr class="row-odd"><td>ceilLedgerSeq</td>
+<td>int64</td>
+<td>Optional, set a value
+which will be combined
+with the current block
+height to restrict
+transactions. If
+transactions do not
+complete within the set
+value plus the current
+block height, the
+transactions fail. The
+value you set must be
+greater than 0. If the
+value is set to 0, no
+limit is set.</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="12%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>FeeLimit</td>
+<td>int64</td>
+<td>Minimum fees required for the transaction</td>
+</tr>
+<tr class="row-odd"><td>GasPrice</td>
+<td>int64</td>
+<td>Transaction gas price</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="22%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_SOURCEADDRESS
+_ERROR</td>
+<td>11002</td>
+<td>Invalid
+sourceAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_NONCE_ERROR</td>
+<td>11048</td>
+<td>Nonce must be
+between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_OPERATIONS
+_ERROR</td>
+<td>11051</td>
+<td>Operations
+cannot be
+resolved</td>
+</tr>
+<tr class="row-odd"><td>OPERATIONS_ONE_ERROR</td>
+<td>11053</td>
+<td>One of the
+operations cannot
+be resolved</td>
+</tr>
+<tr class="row-even"><td>INVALID_SIGNATURENUMBER
+_ERROR</td>
+<td>11054</td>
+<td>SignatureNumber
+must be between
+1 and max(int32)</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqDataOperation</span> <span class="n">model</span><span class="o">.</span><span class="n">BUSendOperation</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">Init</span><span class="p">()</span>
+<span class="n">var</span> <span class="n">amount</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">SetAmount</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">destAddress</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQVU86Jm4FeRW4JcQTD9Rx9NkUkHikYGp6z&quot;</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">SetDestAddress</span><span class="p">(</span><span class="n">destAddress</span><span class="p">)</span>
+
+<span class="n">var</span> <span class="n">reqDataEvaluate</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionEvaluateFeeRequest</span>
+<span class="n">var</span> <span class="n">sourceAddress</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQVU86Jm4FeRW4JcQTD9Rx9NkUkHikYGp6z&quot;</span>
+<span class="n">reqDataEvaluate</span><span class="o">.</span><span class="n">SetSourceAddress</span><span class="p">(</span><span class="n">sourceAddress</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">nonce</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">88</span>
+<span class="n">reqDataEvaluate</span><span class="o">.</span><span class="n">SetNonce</span><span class="p">(</span><span class="n">nonce</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">signatureNumber</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;3&quot;</span>
+<span class="n">reqDataEvaluate</span><span class="o">.</span><span class="n">SetSignatureNumber</span><span class="p">(</span><span class="n">signatureNumber</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">SetCeilLedgerSeq</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">reqDataEvaluate</span><span class="o">.</span><span class="n">SetCeilLedgerSeq</span><span class="p">(</span><span class="n">SetCeilLedgerSeq</span><span class="p">)</span>
+<span class="n">reqDataEvaluate</span><span class="o">.</span><span class="n">SetOperation</span><span class="p">(</span><span class="n">reqDataOperation</span><span class="p">)</span>
+<span class="n">resDataEvaluate</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">EvaluateFee</span><span class="p">(</span><span class="n">reqDataEvaluate</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resDataEvaluate</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resDataEvaluate</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Evaluate:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="buildblob">
+<h3>BuildBlob<a class="headerlink" href="#buildblob" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">BuildBlob</span></code> interface is used to serialize transactions and generate
+transaction blob strings for network transmission.</p>
+<p>Before you can call buildBlob, you need to build some
+operations. There are 16 operations, please refer to <a class="reference internal" href="#baseoperation">BaseOperation</a>.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BuildBlob</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionBuildBlobRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionBuildBlobResponse</span>
+</pre></div>
+</div>
+<p>The request parameters are shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="31%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Required, the source
+account address initiating
+the operation</td>
+</tr>
+<tr class="row-odd"><td>nonce</td>
+<td>int64</td>
+<td>Required, the transaction
+serial number to be
+initiated, add 1 in the
+function, size limit
+[1,max(int64)]</td>
+</tr>
+<tr class="row-even"><td>gasPrice</td>
+<td>int64</td>
+<td>Required, transaction gas
+price, unit MO, 1 BU =
+10^8 MO, size limit [1000,
+max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>feeLimit</td>
+<td>int64</td>
+<td>Required, the minimum fees
+required for the
+transaction, unit MO, 1 BU
+= 10^8 MO, size limit [1,
+max(int64)]</td>
+</tr>
+<tr class="row-even"><td>operation</td>
+<td>list.List</td>
+<td>Required, list of
+operations to be committed
+which cannot be empty</td>
+</tr>
+<tr class="row-odd"><td>ceilLedgerSeq</td>
+<td>int64</td>
+<td>Optional, set a value
+which will be combined
+with the current block
+height to restrict
+transactions. If
+transactions do not
+complete within the set
+value plus the current
+block height, the
+transactions fail. The
+value you set must be
+greater than 0. If the
+value is set to 0, no
+limit is set.</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="13%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TransactionBlob</td>
+<td>string</td>
+<td>Serialized transaction hex string</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="22%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_SOURCEADDRESS
+_ERROR</td>
+<td>11002</td>
+<td>Invalid
+sourceAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_NONCE_ERROR</td>
+<td>11048</td>
+<td>Nonce must be
+between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_DESTADDRESS
+_ERROR</td>
+<td>11003</td>
+<td>Invalid
+destAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_INITBALANCE
+_ERROR</td>
+<td>11004</td>
+<td>InitBalance must
+be between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>SOURCEADDRESS_EQUAL
+_DESTADDRESS_ERROR</td>
+<td>11005</td>
+<td>SourceAddress
+cannot be equal
+to destAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_ISSUE_AMMOUNT
+_ERROR</td>
+<td>11008</td>
+<td>AssetAmount to
+be issued
+must be between
+1 and max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_DATAKEY_ERROR</td>
+<td>11011</td>
+<td>The length of
+key must be
+between 1 and
+1024</td>
+</tr>
+<tr class="row-odd"><td>INVALID_DATAVALUE_ERROR</td>
+<td>11012</td>
+<td>The length of
+value must be
+between 0 and
+256k</td>
+</tr>
+<tr class="row-even"><td>INVALID_DATAVERSION
+_ERROR</td>
+<td>11013</td>
+<td>The version must
+be greater than
+or equal to 0</td>
+</tr>
+<tr class="row-odd"><td>INVALID_MASTERWEIGHT
+_ERROR</td>
+<td>11015</td>
+<td>MasterWeight
+must be between
+0 and
+max(uint32)</td>
+</tr>
+<tr class="row-even"><td>INVALID_SIGNER_ADDRESS
+_ERROR</td>
+<td>11016</td>
+<td>Invalid signer
+address</td>
+</tr>
+<tr class="row-odd"><td>INVALID_SIGNER_WEIGHT
+_ERROR</td>
+<td>11017</td>
+<td>Signer weight
+must be between
+0 and
+max(uint32)</td>
+</tr>
+<tr class="row-even"><td>INVALID_TX_THRESHOLD
+_ERROR</td>
+<td>11018</td>
+<td>TxThreshold must
+be between 0 and
+max(int64)</td>
+</tr>
+<tr class="row-odd"><td>INVALID_OPERATION_TYPE
+_ERROR</td>
+<td>11019</td>
+<td>Operation type
+must be between
+1 and 100</td>
+</tr>
+<tr class="row-even"><td>INVALID_TYPE_THRESHOLD
+_ERROR</td>
+<td>11020</td>
+<td>TypeThreshold
+must be between
+0 and max(int64)</td>
+</tr>
+<tr class="row-odd"><td>INVALID_ASSET_CODE
+_ERROR</td>
+<td>11023</td>
+<td>The length of
+code must be
+between 1 and 64</td>
+</tr>
+<tr class="row-even"><td>INVALID_ASSET_AMOUNT
+_ERROR</td>
+<td>11024</td>
+<td>AssetAmount must
+be between 0 and
+max(int64)</td>
+</tr>
+<tr class="row-odd"><td>INVALID_BU_AMOUNT_ERROR</td>
+<td>11026</td>
+<td>BuAmount must be
+between 0 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_ISSUER_ADDRESS
+_ERROR</td>
+<td>11027</td>
+<td>Invalid issuer
+address</td>
+</tr>
+<tr class="row-odd"><td>NO_SUCH_TOKEN_ERROR</td>
+<td>11030</td>
+<td>The length of
+ctp must be
+between 1 and 64</td>
+</tr>
+<tr class="row-even"><td>INVALID_TOKEN_NAME
+_ERROR</td>
+<td>11031</td>
+<td>The length of
+token name must
+be between 1 and
+1024</td>
+</tr>
+<tr class="row-odd"><td>INVALID_TOKEN_SYMBOL
+_ERROR</td>
+<td>11032</td>
+<td>The length of
+symbol must be
+between 1 and
+1024</td>
+</tr>
+<tr class="row-even"><td>INVALID_TOKEN_DECIMALS
+_ERROR</td>
+<td>11033</td>
+<td>Decimals must be
+between 0 and 8</td>
+</tr>
+<tr class="row-odd"><td>INVALID_TOKEN_TOTALSUPP
+LY_ERROR</td>
+<td>11034</td>
+<td>TotalSupply must
+be between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_TOKENOWNER
+_ERRP</td>
+<td>11035</td>
+<td>Invalid token
+owner</td>
+</tr>
+<tr class="row-odd"><td>INVALID_CONTRACTADDRESS
+_ERROR</td>
+<td>11037</td>
+<td>Invalid contract
+address</td>
+</tr>
+<tr class="row-even"><td>CONTRACTADDRESS_NOT
+_CONTRACTACCOUNT_ERRO</td>
+<td>11038</td>
+<td>ContractAddress
+is not a
+contract account</td>
+</tr>
+<tr class="row-odd"><td>INVALID_TOKEN_AMOUNT
+_ERROR</td>
+<td>11039</td>
+<td>Amount
+must be between
+1 and max(int64)</td>
+</tr>
+<tr class="row-even"><td>SOURCEADDRESS_EQUAL
+_CONTRACTADDRESS_ERROR</td>
+<td>11040</td>
+<td>SourceAddress
+cannot be equal
+to
+contractAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_FROMADDRESS
+_ERROR</td>
+<td>11041</td>
+<td>Invalid
+fromAddress</td>
+</tr>
+<tr class="row-even"><td>FROMADDRESS_EQUAL_DESTA
+DDRESS_ERROR</td>
+<td>11042</td>
+<td>FromAddress
+cannot be equal
+to destAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_SPENDER_ERROR</td>
+<td>11043</td>
+<td>Invalid spender</td>
+</tr>
+<tr class="row-even"><td>PAYLOAD_EMPTY_ERROR</td>
+<td>11044</td>
+<td>Payload cannot
+be empty</td>
+</tr>
+<tr class="row-odd"><td>INVALID_LOG_TOPIC
+_ERROR</td>
+<td>11045</td>
+<td>The length of
+log topic must
+be between 1
+and 128</td>
+</tr>
+<tr class="row-even"><td>INVALID_LOG_DATA
+_ERROR</td>
+<td>11046</td>
+<td>The length of
+log data must be
+between 1 and
+1024</td>
+</tr>
+<tr class="row-odd"><td>INVALID_CONTRACT_TYPE
+_ERROR</td>
+<td>11047</td>
+<td>Type must be
+greater than or
+equal to 0</td>
+</tr>
+<tr class="row-even"><td>INVALID_NONCE_ERROR</td>
+<td>11048</td>
+<td>Nonce must be
+between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-odd"><td>INVALID_GASPRICE
+_ERROR</td>
+<td>11049</td>
+<td>GasPrice must be
+between 1000 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_FEELIMIT_ERROR</td>
+<td>11050</td>
+<td>FeeLimit must be
+between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-odd"><td>OPERATIONS_EMPTY_ERROR</td>
+<td>11051</td>
+<td>Operations
+cannot be empty</td>
+</tr>
+<tr class="row-even"><td>INVALID_CEILLEDGERSEQ
+_ERROR</td>
+<td>11052</td>
+<td>CeilLedgerSeq
+must be equal or
+greater than 0</td>
+</tr>
+<tr class="row-odd"><td>OPERATIONS_ONE_ERROR</td>
+<td>11053</td>
+<td>One of the
+operations
+cannot be
+resolved</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqDataOperation</span> <span class="n">model</span><span class="o">.</span><span class="n">BUSendOperation</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">Init</span><span class="p">()</span>
+<span class="n">var</span> <span class="n">amount</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">var</span> <span class="n">destAddress</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQVU86Jm4FeRW4JcQTD9Rx9NkUkHikYGp6z&quot;</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">SetAmount</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">SetDestAddress</span><span class="p">(</span><span class="n">destAddress</span><span class="p">)</span>
+
+<span class="n">var</span> <span class="n">reqDataBlob</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionBuildBlobRequest</span>
+<span class="n">var</span> <span class="n">sourceAddressBlob</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQemmMwmRQY1JkcU7w3nhruoX5N3j6C29uo&quot;</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetSourceAddress</span><span class="p">(</span><span class="n">sourceAddressBlob</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">feeLimit</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">1000000000</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetFeeLimit</span><span class="p">(</span><span class="n">feeLimit</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">gasPrice</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetGasPrice</span><span class="p">(</span><span class="n">gasPrice</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">nonce</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">88</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetNonce</span><span class="p">(</span><span class="n">nonce</span><span class="p">)</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetOperation</span><span class="p">(</span><span class="n">reqDataOperation</span><span class="p">)</span>
+
+<span class="n">resDataBlob</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">BuildBlob</span><span class="p">(</span><span class="n">reqDataBlob</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resDataBlob</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Blob:&quot;</span><span class="p">,</span> <span class="n">resDataBlob</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="baseoperation">
+<h4>BaseOperation<a class="headerlink" href="#baseoperation" title="Permalink to this headline">¶</a></h4>
+<p>Before calling the BuildBlob interface, some operation objects shall be built, and now we have 16 operation objects:
+<code class="docutils literal notranslate"><span class="pre">AccountActivateOperation</span></code>,``AccountSetMetadataOperation``,``AccountSetPrivilegeOperation``,
+<code class="docutils literal notranslate"><span class="pre">AssetIssueOperation</span></code>,``AssetSendOperation``,``BUSendOperation``,``Ctp10TokenIssueOperation``,
+<code class="docutils literal notranslate"><span class="pre">Ctp10TokenTransferOperation</span></code>,``Ctp10TokenTransferFromOperation``,``Ctp10TokenApproveOperation``,
+<code class="docutils literal notranslate"><span class="pre">Ctp10TokenAssignOperation</span></code>,``Ctp10TokenChangeOwnerOperation``,``ContractCreateOperation``,
+<code class="docutils literal notranslate"><span class="pre">ContractInvokeByAssetOperation</span></code>,``ContractInvokeByBUOperation`` and <code class="docutils literal notranslate"><span class="pre">LogCreateOperation</span></code>。</p>
+<p>AccountActivateOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="13%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address of the
+operation</td>
+</tr>
+<tr class="row-odd"><td>destAddress</td>
+<td>string</td>
+<td>Required, target account address</td>
+</tr>
+<tr class="row-even"><td>initBalance</td>
+<td>int64</td>
+<td>Required, initialize the asset,
+size [1, max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>AccountSetMetadataOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="12%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address of the operation</td>
+</tr>
+<tr class="row-odd"><td>key</td>
+<td>string</td>
+<td>Required, metadata keyword, length limit [1, 1024]</td>
+</tr>
+<tr class="row-even"><td>value</td>
+<td>string</td>
+<td>Optional, metadata content, length limit [0, 256000]</td>
+</tr>
+<tr class="row-odd"><td>version</td>
+<td>int64</td>
+<td>Optional, metadata version</td>
+</tr>
+<tr class="row-even"><td>deleteFlag</td>
+<td>bool</td>
+<td>Optional, whether to delete metadata</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>AccountSetPrivilegeOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="23%" />
+<col width="52%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address of
+the operation</td>
+</tr>
+<tr class="row-odd"><td>masterWeight</td>
+<td>string</td>
+<td>Optional, account weight, size limit
+[0, max(uint32)]</td>
+</tr>
+<tr class="row-even"><td>signers</td>
+<td>[] <a class="reference internal" href="#signer">Signer</a></td>
+<td>Optional, signer weight list</td>
+</tr>
+<tr class="row-odd"><td>txThreshold</td>
+<td>string</td>
+<td>Optional, transaction threshold,
+size limit [0, max(int64)]</td>
+</tr>
+<tr class="row-even"><td>typeThreshold</td>
+<td><a class="reference internal" href="#typethreshold">TypeThreshold</a></td>
+<td>Optional, specify transaction
+threshold</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>AssetIssueOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="19%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>code</td>
+<td>string</td>
+<td>Required, asset code, length limit
+[1, 64]</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>Required, number of asset issues,
+size limit [0, max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>AssetSendOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="41%" />
+<col width="18%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source
+account address of
+the operation</td>
+</tr>
+<tr class="row-odd"><td>destAddress</td>
+<td>string</td>
+<td>Required, target
+account address</td>
+</tr>
+<tr class="row-even"><td>code</td>
+<td>string</td>
+<td>Required, asset code,
+length limit [1, 64]</td>
+</tr>
+<tr class="row-odd"><td>issuer</td>
+<td>string</td>
+<td>Required, account
+address issuing
+assets</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>Required, asset
+quantity, size limit
+[0, max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>BUSendOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>destAddress</td>
+<td>string</td>
+<td>Required, target account address</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>Required, amount of asset
+issued, size limit [0,
+max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenIssueOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>initBalance</td>
+<td>int64</td>
+<td><p class="first">Required, initial assets for the
+contract account,</p>
+<blockquote class="last">
+<div>size limit [1,max(64)]</div></blockquote>
+</td>
+</tr>
+<tr class="row-even"><td>name</td>
+<td>string</td>
+<td>Required, token name,
+length limit [1, 1024]</td>
+</tr>
+<tr class="row-odd"><td>symbol</td>
+<td>string</td>
+<td>Required, token symbol,
+length limit [1, 1024]</td>
+</tr>
+<tr class="row-even"><td>decimals</td>
+<td>int64</td>
+<td>Required, the precision of the
+number of tokens, size limit
+[0, 8]</td>
+</tr>
+<tr class="row-odd"><td>supply</td>
+<td>int64</td>
+<td>Required, total supply of issued
+token,size limit [1, max(int64)]</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenTransferOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>Required, contract account
+address</td>
+</tr>
+<tr class="row-even"><td>destAddress</td>
+<td>string</td>
+<td>Required, target account address
+to which token is transferred</td>
+</tr>
+<tr class="row-odd"><td>amount</td>
+<td>int64</td>
+<td>Required, amount of tokens to be
+transferred, size limit [1,
+max(int64)]</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenTransferFromOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>Required, contract account
+address</td>
+</tr>
+<tr class="row-even"><td>fromAddress</td>
+<td>string</td>
+<td>Required, source account address
+from which token is transferred</td>
+</tr>
+<tr class="row-odd"><td>destAddress</td>
+<td>string</td>
+<td>Required, target account address
+to which token is transferred</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>Required, amount of tokens
+to be transferred, size limit
+[1, max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenApproveOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>Required, contract account
+address</td>
+</tr>
+<tr class="row-even"><td>spender</td>
+<td>string</td>
+<td>Required, authorized account
+address</td>
+</tr>
+<tr class="row-odd"><td>amount</td>
+<td>int64</td>
+<td>Required, the number of
+authorized tokens to be
+transferred, size limit [1,
+max(int64)]</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenAssignOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>Required, contract account
+address</td>
+</tr>
+<tr class="row-even"><td>destAddress</td>
+<td>string</td>
+<td>Required, target account address
+to be assigned</td>
+</tr>
+<tr class="row-odd"><td>amount</td>
+<td>int64</td>
+<td>Required, amount of tokens
+to be allocated, size limit [1,
+max(int64)]</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenChangeOwnerOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>Required, contract account
+address</td>
+</tr>
+<tr class="row-even"><td>tokenOwner</td>
+<td>string</td>
+<td>Required, target account address
+to which token is transferred</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>ContractCreateOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>initBalance</td>
+<td>int64</td>
+<td>Required, initial asset for
+contract account,
+size limit [1, max(int64)]</td>
+</tr>
+<tr class="row-even"><td>payload</td>
+<td>string</td>
+<td>Required, contract code for the
+corresponding language</td>
+</tr>
+<tr class="row-odd"><td>initInput</td>
+<td>string</td>
+<td>Optional, the input parameters
+of the init method in the
+contract code</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>ContractInvokeByAssetOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>Required, contract account
+address</td>
+</tr>
+<tr class="row-even"><td>code</td>
+<td>string</td>
+<td>Optional, asset code, length
+limit [0, 64]; when it is
+empty, only the contract is
+triggered</td>
+</tr>
+<tr class="row-odd"><td>issuer</td>
+<td>string</td>
+<td>Optional, the account address
+issuing assets; when it is null,
+only trigger the contract</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>Optional, asset quantity, size
+limit [0, max(int64)], when
+it is 0, only trigger the
+contract</td>
+</tr>
+<tr class="row-odd"><td>input</td>
+<td>string</td>
+<td>Optional, the input parameter of
+the main() method for the
+contract to be triggered</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>ContractInvokeByBUOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>Required, contract account
+address</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>Optional, number of asset
+issues, size limit [0,max(int64)]
+when it is 0,
+only triggers the contract</td>
+</tr>
+<tr class="row-odd"><td>input</td>
+<td>string</td>
+<td>Optional, the input parameter of
+the main() method for the
+contract to be triggered</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+<p>LogCreateOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="20%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>Optional, source account address
+of the operation</td>
+</tr>
+<tr class="row-odd"><td>topic</td>
+<td>string</td>
+<td>Required,log topic,
+size limit [1, 128]</td>
+</tr>
+<tr class="row-even"><td>data</td>
+<td>[]string</td>
+<td>Required,log content, the length
+of each string is between [1, 1024]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>Optional, note</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="sign">
+<h3>Sign<a class="headerlink" href="#sign" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Sign</span></code> interface is used to sign the transactions.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Sign</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionSignRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSignResponse</span>
+</pre></div>
+</div>
+<p>The request parameters are shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="14%" />
+<col width="68%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blob</td>
+<td>string</td>
+<td>Required, pending transaction blob to be signed</td>
+</tr>
+<tr class="row-odd"><td>privateKeys</td>
+<td>[]string</td>
+<td>Required, private key list</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="38%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Signatures</td>
+<td>[] <a class="reference internal" href="#signature">signature</a></td>
+<td>Signed data list</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="16%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOB_ERROR</td>
+<td>11056</td>
+<td>Invalid blob</td>
+</tr>
+<tr class="row-odd"><td>PRIVATEKEY_NULL_ERROR</td>
+<td>11057</td>
+<td>PrivateKeys cannot be empty</td>
+</tr>
+<tr class="row-even"><td>PRIVATEKEY_ONE_ERROR</td>
+<td>11058</td>
+<td>One of privateKeys error</td>
+</tr>
+<tr class="row-odd"><td>GET_ENCPUBLICKEY_ERROR</td>
+<td>14000</td>
+<td>The function <cite>GetEncPublicKey</cite> failed</td>
+</tr>
+<tr class="row-even"><td>SIGN_ERROR</td>
+<td>14001</td>
+<td>The function <cite>Sign</cite> failed</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PrivateKey</span> <span class="p">:</span><span class="o">=</span> <span class="p">[]</span><span class="n">string</span><span class="p">{</span><span class="s2">&quot;privbUPxs6QGkJaNdgWS2hisny6ytx1g833cD7V9C3YET9mJ25wdcq6h&quot;</span><span class="p">}</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSignRequest</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlob</span><span class="p">(</span><span class="n">resDataBlob</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Blob</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetPrivateKeys</span><span class="p">(</span><span class="n">PrivateKey</span><span class="p">)</span>
+<span class="n">resDataSign</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">Sign</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resDataSign</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Sign:&quot;</span><span class="p">,</span> <span class="n">resDataSign</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id3">
+<h4>Interface Types<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="signature">
+<h5>Signature<a class="headerlink" href="#signature" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="23%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>signData</td>
+<td>int64</td>
+<td>Data signed</td>
+</tr>
+<tr class="row-odd"><td>publicKey</td>
+<td>int64</td>
+<td>Public key</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="submit">
+<h3>Submit<a class="headerlink" href="#submit" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Submit</span></code> interface is used to submit transactions.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Submit</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionSubmitRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSubmitResponse</span>
+</pre></div>
+</div>
+<p>The request parameters are shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="32%" />
+<col width="49%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blob</td>
+<td>string</td>
+<td>Required, transaction blob</td>
+</tr>
+<tr class="row-odd"><td>signature</td>
+<td>[] <a class="reference internal" href="#signature">signature</a></td>
+<td>Required, signature list</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="22%" />
+<col width="49%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hash</td>
+<td>string</td>
+<td>Transaction hash</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="26%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOB_ERROR</td>
+<td>11052</td>
+<td>Invalid blob</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSubmitRequest</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlob</span><span class="p">(</span><span class="n">resDataBlob</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Blob</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetSignatures</span><span class="p">(</span><span class="n">resDataSign</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Signatures</span><span class="p">)</span>
+<span class="n">resDataSubmit</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">Submit</span><span class="p">(</span><span class="n">reqData</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resDataSubmit</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Hash:&quot;</span><span class="p">,</span> <span class="n">resDataSubmit</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Hash</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getinfo-transaction">
+<h3>GetInfo-transaction<a class="headerlink" href="#getinfo-transaction" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetInfo-transaction</span></code> interface is used to check transactions information by the hash value.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetInfo</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionGetInfoRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionGetInfoResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="22%" />
+<col width="49%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hash</td>
+<td>string</td>
+<td>Transaction hash</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="42%" />
+<col width="35%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TotalCount</td>
+<td>int64</td>
+<td>Total number of
+transactions returned</td>
+</tr>
+<tr class="row-odd"><td>Transactions</td>
+<td>[] <a class="reference internal" href="#transactionhistory">TransactionHistory</a></td>
+<td>Transaction content</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionGetInfoRequest</span>
+<span class="n">var</span> <span class="nb">hash</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;cd33ad1e033d6dfe3db3a1d29a55e190935d9d1ff40a138d777e9406ebe0fdb1&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetHash</span><span class="p">(</span><span class="nb">hash</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;info:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id4">
+<h4>Interface Types<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="transactionhistory">
+<h5>TransactionHistory<a class="headerlink" href="#transactionhistory" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="33%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>ActualFee</td>
+<td>string</td>
+<td>Actual transaction cost</td>
+</tr>
+<tr class="row-odd"><td>CloseTime</td>
+<td>int64</td>
+<td>Transaction closure time</td>
+</tr>
+<tr class="row-even"><td>ErrorCode</td>
+<td>int64</td>
+<td>Transaction error code</td>
+</tr>
+<tr class="row-odd"><td>ErrorDesc</td>
+<td>string</td>
+<td>Transaction description</td>
+</tr>
+<tr class="row-even"><td>Hash</td>
+<td>string</td>
+<td>Transaction hash</td>
+</tr>
+<tr class="row-odd"><td>LedgerSeq</td>
+<td>int64</td>
+<td>Block serial number</td>
+</tr>
+<tr class="row-even"><td>Transactions</td>
+<td><a class="reference internal" href="#transaction">Transaction</a></td>
+<td>List of transaction contents</td>
+</tr>
+<tr class="row-odd"><td>Signatures</td>
+<td>[] <a class="reference internal" href="#signature">Signature</a></td>
+<td>Signature list</td>
+</tr>
+<tr class="row-even"><td>TxSize</td>
+<td>int64</td>
+<td>Transaction size</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="transaction">
+<h5>Transaction<a class="headerlink" href="#transaction" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>SourceAddress</td>
+<td>string</td>
+<td>The source account
+address initiating
+the transaction</td>
+</tr>
+<tr class="row-odd"><td>FeeLimit</td>
+<td>int64</td>
+<td>Minimum fees required
+for the transaction</td>
+</tr>
+<tr class="row-even"><td>GasPrice</td>
+<td>int64</td>
+<td>Transaction fuel
+price</td>
+</tr>
+<tr class="row-odd"><td>Nonce</td>
+<td>int64</td>
+<td>Transaction serial
+number</td>
+</tr>
+<tr class="row-even"><td>Operations</td>
+<td>[]  <a class="reference internal" href="#operation">Operation</a></td>
+<td>Operation list</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="operation">
+<h5>Operation<a class="headerlink" href="#operation" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="26%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Type</td>
+<td>int64</td>
+<td>Operation type</td>
+</tr>
+<tr class="row-odd"><td>SourceAddress</td>
+<td>string</td>
+<td>The source account address
+initiating operations</td>
+</tr>
+<tr class="row-even"><td>Metadata</td>
+<td>string</td>
+<td>Note</td>
+</tr>
+<tr class="row-odd"><td>CreateAccount</td>
+<td><a class="reference internal" href="#createaccount">CreateAccount</a></td>
+<td>Operation of creating accounts</td>
+</tr>
+<tr class="row-even"><td>IssueAsset</td>
+<td><a class="reference internal" href="#issueasset">IssueAsset</a></td>
+<td>Operation of issuing assets</td>
+</tr>
+<tr class="row-odd"><td>PayAsset</td>
+<td><a class="reference internal" href="#payasset">PayAsset</a></td>
+<td>Operation of transferring assets</td>
+</tr>
+<tr class="row-even"><td>PayCoin</td>
+<td><a class="reference internal" href="#paycoin">PayCoin</a></td>
+<td>Operation of sending BU</td>
+</tr>
+<tr class="row-odd"><td>SetMetadata</td>
+<td><a class="reference internal" href="#setmetadata">SetMetadata</a></td>
+<td>Operation of setting metadata</td>
+</tr>
+<tr class="row-even"><td>SetPrivilege</td>
+<td><a class="reference internal" href="#setprivilege">SetPrivilege</a></td>
+<td>Operation of setting account privilege</td>
+</tr>
+<tr class="row-odd"><td>Log</td>
+<td><a class="reference internal" href="#log">Log</a></td>
+<td>Record logs</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="triggertransaction">
+<h5>TriggerTransaction<a class="headerlink" href="#triggertransaction" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="24%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hash</td>
+<td>string</td>
+<td>Transaction hash</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="createaccount">
+<h5>CreateAccount<a class="headerlink" href="#createaccount" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="37%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DestAddress</td>
+<td>string</td>
+<td>Target account address</td>
+</tr>
+<tr class="row-odd"><td>Contract</td>
+<td><a class="reference internal" href="#contract">Contract</a></td>
+<td>Contract info</td>
+</tr>
+<tr class="row-even"><td>Priv</td>
+<td><a class="reference internal" href="#priv">Priv</a></td>
+<td>Account privilege</td>
+</tr>
+<tr class="row-odd"><td>Metadata</td>
+<td>[] <a class="reference internal" href="#metadata-2"><span class="std std-ref">Metadata</span></a></td>
+<td>Account</td>
+</tr>
+<tr class="row-even"><td>InitBalance</td>
+<td>int64</td>
+<td>Account assets</td>
+</tr>
+<tr class="row-odd"><td>InitInput</td>
+<td>string</td>
+<td>The input parameter for
+the init function
+of the contract</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="contract">
+<h5>Contract<a class="headerlink" href="#contract" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="12%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Type</td>
+<td>integer</td>
+<td>The contract language is not assigned value by default</td>
+</tr>
+<tr class="row-odd"><td>Payload</td>
+<td>string</td>
+<td>The contract code for the corresponding language</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="metadata-2">
+<span id="id5"></span><h5>Metadata<a class="headerlink" href="#metadata-2" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="23%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Key</td>
+<td>string</td>
+<td>metadata keyword</td>
+</tr>
+<tr class="row-odd"><td>Value</td>
+<td>string</td>
+<td>metadata content</td>
+</tr>
+<tr class="row-even"><td>Version</td>
+<td>int</td>
+<td>metadata version</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="issueasset">
+<h5>IssueAsset<a class="headerlink" href="#issueasset" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="20%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Code</td>
+<td>String</td>
+<td>Assets encoding
+size limit [1 64]</td>
+</tr>
+<tr class="row-odd"><td>AssetAmount</td>
+<td>Long</td>
+<td>Assets amount</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="payasset">
+<h5>PayAsset<a class="headerlink" href="#payasset" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="21%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DestAddress</td>
+<td>string</td>
+<td>The target account address
+to which the asset is
+transferred</td>
+</tr>
+<tr class="row-odd"><td>Asset</td>
+<td><a class="reference internal" href="#asset">Asset</a></td>
+<td>Account asset</td>
+</tr>
+<tr class="row-even"><td>Input</td>
+<td>string</td>
+<td>Input parameters for the
+main function of the
+contract</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="paycoin">
+<h5>PayCoin<a class="headerlink" href="#paycoin" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="16%" />
+<col width="56%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DestAddress</td>
+<td>string</td>
+<td>The target account address
+to which the asset is
+transferred</td>
+</tr>
+<tr class="row-odd"><td>Amount</td>
+<td>int64</td>
+<td>BU amounts to be
+transferred</td>
+</tr>
+<tr class="row-even"><td>Input</td>
+<td>string</td>
+<td>Input parameters for the
+main function of the
+contract</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="setmetadata">
+<h5>SetMetadata<a class="headerlink" href="#setmetadata" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="17%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Key</td>
+<td>string</td>
+<td>metadata keyword</td>
+</tr>
+<tr class="row-odd"><td>Value</td>
+<td>string</td>
+<td>metadata content</td>
+</tr>
+<tr class="row-even"><td>Version</td>
+<td>int64</td>
+<td>metadata version</td>
+</tr>
+<tr class="row-odd"><td>DeleteFlag</td>
+<td>bool</td>
+<td>Whether to delete metadata</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="setprivilege">
+<h5>SetPrivilege<a class="headerlink" href="#setprivilege" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="31%" />
+<col width="44%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MasterWeight</td>
+<td>string</td>
+<td>Account weight,size limit
+[0,max(uint32)]</td>
+</tr>
+<tr class="row-odd"><td>Signers</td>
+<td>[] <a class="reference internal" href="#signer">Signer</a></td>
+<td>Signer weight list</td>
+</tr>
+<tr class="row-even"><td>TxThreshold</td>
+<td>string</td>
+<td>Transaction threshold,
+size limit[0,max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>TypeThreshold</td>
+<td><a class="reference internal" href="#typethreshold">TypeThreshold</a></td>
+<td>Threshold for specified
+transaction type</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="log">
+<h5>Log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="32%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Topic</td>
+<td>string</td>
+<td>Log theme</td>
+</tr>
+<tr class="row-odd"><td>Data</td>
+<td>string[]</td>
+<td>Log content</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="block-services">
+<h2>Block Services<a class="headerlink" href="#block-services" title="Permalink to this headline">¶</a></h2>
+<p>Block services provide block-related interfaces. There are currently 11 interfaces:<code class="docutils literal notranslate"><span class="pre">GetNumber</span></code>,``CheckStatus``,``GetTransactions``,``GetInfo-block``,``GetLatest``,
+<code class="docutils literal notranslate"><span class="pre">GetValidators</span></code>,``GetLatestValidators``,``GetReward``,``GetLatestReward``,``GetFees`` and <code class="docutils literal notranslate"><span class="pre">GetLatestFees</span></code>。</p>
+<div class="section" id="getnumber">
+<h3>GetNumber<a class="headerlink" href="#getnumber" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetNumber</span></code> interface is used to query the latest block height.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetNumber</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetNumberResponse</span>
+</pre></div>
+</div>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="31%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>BlockNumber</td>
+<td>int64</td>
+<td>The latest block
+height,corresponding to
+the underlying field
+seq</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="37%" />
+<col width="20%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetNumber</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;BlockNumber:&quot;</span><span class="p">,</span> <span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">BlockNumber</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="checkstatus">
+<h3>CheckStatus<a class="headerlink" href="#checkstatus" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">CheckStatus</span></code> interface is used to check if the local node block is synchronized.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CheckStatus</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockCheckStatusResponse</span>
+</pre></div>
+</div>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="15%" />
+<col width="59%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>IsSynchronous</td>
+<td>boolean</td>
+<td>Whether the block is synchronized</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="37%" />
+<col width="20%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">CheckStatus</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;IsSynchronous:&quot;</span><span class="p">,</span> <span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">IsSynchronous</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="gettransactions">
+<h3>GetTransactions<a class="headerlink" href="#gettransactions" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetTransactions</span></code> interface is used to query all transactions at the
+specified block height.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetTransactions</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetTransactionRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetTransactionResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="31%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blockNumber</td>
+<td>int64</td>
+<td>Required, the height of
+the block to be queried
+must be greater than 0</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="39%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TotalCount</td>
+<td>int64</td>
+<td>Total number of
+transactions returned</td>
+</tr>
+<tr class="row-odd"><td>Transactions</td>
+<td>[] <a class="reference internal" href="#transactionhistory">TransactionHistory</a></td>
+<td>Transaction content</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="42%" />
+<col width="19%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must be
+greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect
+to the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetTransactionRequest</span>
+<span class="n">var</span> <span class="n">blockNumber</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">581283</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlockNumber</span><span class="p">(</span><span class="n">blockNumber</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetTransactions</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Transactions</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Transactions:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getinfo-block">
+<h3>GetInfo-block<a class="headerlink" href="#getinfo-block" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetInfo-block</span></code> interface is used to obtain block information.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetInfo</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetInfoRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetInfoResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="10%" />
+<col width="71%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blockNumber</td>
+<td>int64</td>
+<td>Required, the height of the block to be queried</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="16%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CloseTime</td>
+<td>int64</td>
+<td>Block closure time</td>
+</tr>
+<tr class="row-odd"><td>Number</td>
+<td>int64</td>
+<td>Block height</td>
+</tr>
+<tr class="row-even"><td>TxCount</td>
+<td>int64</td>
+<td>Total transactions amount</td>
+</tr>
+<tr class="row-odd"><td>Version</td>
+<td>string</td>
+<td>Block version</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="16%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must be greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetInfoRequest</span>
+<span class="n">var</span> <span class="n">blockNumber</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">581283</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlockNumber</span><span class="p">(</span><span class="n">blockNumber</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Header</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Header:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getlatest">
+<h3>GetLatest<a class="headerlink" href="#getlatest" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetLatest</span></code> interface is used to get the latest block information.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetLatest</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetLatestResponse</span>
+</pre></div>
+</div>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="17%" />
+<col width="59%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CloseTime</td>
+<td>int64</td>
+<td>Block closure time</td>
+</tr>
+<tr class="row-odd"><td>Number</td>
+<td>int64</td>
+<td>Block height</td>
+</tr>
+<tr class="row-even"><td>TxCount</td>
+<td>int64</td>
+<td>Total transactions amount</td>
+</tr>
+<tr class="row-odd"><td>Version</td>
+<td>string</td>
+<td>Block version</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="37%" />
+<col width="20%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetLatest</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Header</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Header:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getvalidators">
+<h3>GetValidators<a class="headerlink" href="#getvalidators" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetValidators</span></code> interface is used to get the number of all the
+authentication nodes in the specified block.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetValidators</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetValidatorsRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetValidatorsResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="31%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blockNumber</td>
+<td>int64</td>
+<td>The height of the block
+to be queried</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="44%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>validators</td>
+<td>[] <a class="reference internal" href="#validatorinfo">ValidatorInfo</a></td>
+<td>Validators list</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="42%" />
+<col width="18%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must be
+greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetValidatorsRequest</span>
+<span class="n">var</span> <span class="n">blockNumber</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">581283</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlockNumber</span><span class="p">(</span><span class="n">blockNumber</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetValidators</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Validators</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Validators:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id6">
+<h4>Interface Types<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="validatorinfo">
+<h5>ValidatorInfo<a class="headerlink" href="#validatorinfo" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="16%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>String</td>
+<td>Consensus node address</td>
+</tr>
+<tr class="row-odd"><td>PledgeCoinAmount</td>
+<td>int64</td>
+<td>Deposit of validators</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="getlatestvalidators">
+<h3>GetLatestValidators<a class="headerlink" href="#getlatestvalidators" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetLatestValidators</span></code> interface is used to get the number of all
+validators in the latest block.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetLatestValidators</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetLatestValidatorsResponse</span>
+</pre></div>
+</div>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="44%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>validators</td>
+<td>[] <a class="reference internal" href="#validatorinfo">ValidatorInfo</a></td>
+<td>Validators list</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="18%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must
+be greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetLatestValidators</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Validators</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Validators:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getreward">
+<h3>GetReward<a class="headerlink" href="#getreward" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetReward</span></code> interface is used to retrieve the block reward and
+valicator node rewards in the specified block.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetReward</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetRewardRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetRewardResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="31%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blockNumber</td>
+<td>int64</td>
+<td>Required, the height of
+the block to be queried</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="37%" />
+<col width="28%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>BlockReward</td>
+<td>int64</td>
+<td>Block rewards</td>
+</tr>
+<tr class="row-odd"><td>ValidatorsReward</td>
+<td>[] <a class="reference internal" href="#validatorreward">ValidatorReward</a></td>
+<td>Validators rewards</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="16%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must be greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetRewardRequest</span>
+<span class="n">var</span> <span class="n">blockNumber</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">581283</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlockNumber</span><span class="p">(</span><span class="n">blockNumber</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetReward</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;ValidatorsReward:&quot;</span><span class="p">,</span> <span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">ValidatorsReward</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id7">
+<h4>Interface Types<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="validatorreward">
+<h5>ValidatorReward<a class="headerlink" href="#validatorreward" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="21%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Validator</td>
+<td>String</td>
+<td>Validator address</td>
+</tr>
+<tr class="row-odd"><td>Reward</td>
+<td>int64</td>
+<td>Validator reward</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="getlatestreward">
+<h3>GetLatestReward<a class="headerlink" href="#getlatestreward" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetLatestReward</span></code> interface gets the block rewards and validator
+rewards in the latest block.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetLatestReward</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetLatestRewardResponse</span>
+</pre></div>
+</div>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>BlockReward</td>
+<td>int64</td>
+<td>Block rewards</td>
+</tr>
+<tr class="row-odd"><td>ValidatorsReward</td>
+<td>[] <a class="reference internal" href="#validatorreward">ValidatorReward</a></td>
+<td>Validator rewards</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="37%" />
+<col width="20%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetLatestReward</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;ValidatorsReward:&quot;</span><span class="p">,</span> <span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">ValidatorsReward</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getfees">
+<h3>GetFees<a class="headerlink" href="#getfees" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetFees</span></code> interface gets the minimum asset limit and fuel price of the
+account in the specified block.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetFees</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetFeesRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetFeesResponse</span>
+</pre></div>
+</div>
+<p>The request parameter is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="31%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blockNumber</td>
+<td>int64</td>
+<td>Required, the height of
+the block to be queried</td>
+</tr>
+</tbody>
+</table>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="27%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Fees</td>
+<td><a class="reference internal" href="#fees">Fees</a></td>
+<td>Fees</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="17%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must
+be greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetFeesRequest</span>
+<span class="n">var</span> <span class="n">blockNumber</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">581283</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlockNumber</span><span class="p">(</span><span class="n">blockNumber</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetFees</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Fees</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Fees:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id8">
+<h4>Interface Types<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="fees">
+<h5>Fees<a class="headerlink" href="#fees" title="Permalink to this headline">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="9%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Member</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>BaseReserve</td>
+<td>int64</td>
+<td>Minimum asset limit for the account</td>
+</tr>
+<tr class="row-odd"><td>GasPrice</td>
+<td>int64</td>
+<td>Transaction fuel price, unit MO, 1 BU = 10^8 MO</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="getlatestfees">
+<h3>GetLatestFees<a class="headerlink" href="#getlatestfees" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetLatestFees</span></code> interface is used to obtain the minimum asset limit
+and fuel price of the account in the latest block.</p>
+<p>The method to call this interface is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetLatestFees</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetLatestFeesResponse</span>
+</pre></div>
+</div>
+<p>The response data is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="29%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Fees</td>
+<td><a class="reference internal" href="#fees">fees</a></td>
+<td>Fees</td>
+</tr>
+</tbody>
+</table>
+<p>The error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="37%" />
+<col width="20%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception</th>
+<th class="head">Error Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>The specific example is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetLatestFees</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Fees</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Fees:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="error-code">
+<h2>Error code<a class="headerlink" href="#error-code" title="Permalink to this headline">¶</a></h2>
+<p>The public error code is shown in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>11001</td>
+<td>Failed to create an account.</td>
+</tr>
+<tr class="row-odd"><td>11002</td>
+<td>Invalid sourceAddress.</td>
+</tr>
+<tr class="row-even"><td>11003</td>
+<td>Invalid destAddress.</td>
+</tr>
+<tr class="row-odd"><td>11004</td>
+<td>InitBalance must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11005</td>
+<td>SourceAddress cannot be equal to destAddress.</td>
+</tr>
+<tr class="row-odd"><td>11006</td>
+<td>Invalid address.</td>
+</tr>
+<tr class="row-even"><td>11007</td>
+<td>Failed to connect to the network.</td>
+</tr>
+<tr class="row-odd"><td>11008</td>
+<td>AssetAmount to be issued must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11009</td>
+<td>The account does not have this asset.</td>
+</tr>
+<tr class="row-odd"><td>11010</td>
+<td>The account does not have this metadata.</td>
+</tr>
+<tr class="row-even"><td>11011</td>
+<td>The length of key must be between 1 and 1024.</td>
+</tr>
+<tr class="row-odd"><td>11012</td>
+<td>The length of value must be between 0 and 256k.</td>
+</tr>
+<tr class="row-even"><td>11013</td>
+<td>The version must be greater than or equal to 0.</td>
+</tr>
+<tr class="row-odd"><td>11015</td>
+<td>MasterWeight must be between 0 and max(uint32).</td>
+</tr>
+<tr class="row-even"><td>11016</td>
+<td>Invalid signer address.</td>
+</tr>
+<tr class="row-odd"><td>11017</td>
+<td>Signer weight must be between 0 and max(uint32).</td>
+</tr>
+<tr class="row-even"><td>11018</td>
+<td>TxThreshold must be between 0 and max(int64).</td>
+</tr>
+<tr class="row-odd"><td>11019</td>
+<td>Type of TypeThreshold is invalid.</td>
+</tr>
+<tr class="row-even"><td>11020</td>
+<td>TypeThreshold must be between 0 and max(int64).</td>
+</tr>
+<tr class="row-odd"><td>11023</td>
+<td>The length of code must be between 1 and 64.</td>
+</tr>
+<tr class="row-even"><td>11024</td>
+<td>AssetAmount must be between 0 and max(int64).</td>
+</tr>
+<tr class="row-odd"><td>11026</td>
+<td>BuAmount must be between 0 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11027</td>
+<td>Invalid issuer address.</td>
+</tr>
+<tr class="row-odd"><td>11030</td>
+<td>The length of ctp must be between 1 and 64.</td>
+</tr>
+<tr class="row-even"><td>11031</td>
+<td>The length of token name must be between 1 and 1024.</td>
+</tr>
+<tr class="row-odd"><td>11032</td>
+<td>The length of symbol must be between 1 and 1024.</td>
+</tr>
+<tr class="row-even"><td>11033</td>
+<td>Decimals must be between 0 and 8.</td>
+</tr>
+<tr class="row-odd"><td>11034</td>
+<td>TotalSupply must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11035</td>
+<td>Invalid token owner.</td>
+</tr>
+<tr class="row-odd"><td>11036</td>
+<td>Failed to get allowance.</td>
+</tr>
+<tr class="row-even"><td>11037</td>
+<td>Invalid contract address.</td>
+</tr>
+<tr class="row-odd"><td>11038</td>
+<td>contractAddress is not a contract account.</td>
+</tr>
+<tr class="row-even"><td>11039</td>
+<td>Amount must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-odd"><td>11040</td>
+<td>SourceAddress cannot be equal to contractAddress.</td>
+</tr>
+<tr class="row-even"><td>11041</td>
+<td>Invalid fromAddress.</td>
+</tr>
+<tr class="row-odd"><td>11042</td>
+<td>FromAddress cannot be equal to destAddress.</td>
+</tr>
+<tr class="row-even"><td>11043</td>
+<td>Invalid spender.</td>
+</tr>
+<tr class="row-odd"><td>11045</td>
+<td>The length of log topic must be between 1 and 128.</td>
+</tr>
+<tr class="row-even"><td>11046</td>
+<td>The length of log data must be between 1 and 1024.</td>
+</tr>
+<tr class="row-odd"><td>11048</td>
+<td>Nonce must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11049</td>
+<td>GasPrice must be between 1000 and max(int64).</td>
+</tr>
+<tr class="row-odd"><td>11050</td>
+<td>FeeLimit must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11051</td>
+<td>Operations cannot be empty.</td>
+</tr>
+<tr class="row-odd"><td>11052</td>
+<td>CeilLedgerSeq must be greater than or equal to 0.</td>
+</tr>
+<tr class="row-even"><td>11053</td>
+<td>One of the operations cannot be resolved.</td>
+</tr>
+<tr class="row-odd"><td>11054</td>
+<td>SignatureNumber must be between 1 and max(int32).</td>
+</tr>
+<tr class="row-even"><td>11055</td>
+<td>Invalid transaction hash.</td>
+</tr>
+<tr class="row-odd"><td>11056</td>
+<td>Invalid blob.</td>
+</tr>
+<tr class="row-even"><td>11057</td>
+<td>PrivateKeys cannot be empty.</td>
+</tr>
+<tr class="row-odd"><td>11058</td>
+<td>One of the privateKeys is invalid.</td>
+</tr>
+<tr class="row-even"><td>11060</td>
+<td>BlockNumber must be greater than 0.</td>
+</tr>
+<tr class="row-odd"><td>11062</td>
+<td>Url cannot be empty.</td>
+</tr>
+<tr class="row-even"><td>11063</td>
+<td>ContractAddress and code cannot be empty at the same time.</td>
+</tr>
+<tr class="row-odd"><td>11064</td>
+<td>OptType must be between 0 and 2.</td>
+</tr>
+<tr class="row-even"><td>11065</td>
+<td>Failed to get allowance.</td>
+</tr>
+<tr class="row-odd"><td>11067</td>
+<td>The signatures cannot be empty.</td>
+</tr>
+<tr class="row-even"><td>11066</td>
+<td>Failed to get token info.</td>
+</tr>
+<tr class="row-odd"><td>20000</td>
+<td>System error.</td>
+</tr>
+</tbody>
+</table>
+<p>The following table describes the GO error messages:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>14000</td>
+<td>The function <cite>GetEncPublicKey</cite> failed.</td>
+</tr>
+<tr class="row-odd"><td>14001</td>
+<td>The function <cite>Sign</cite> failed.</td>
+</tr>
+<tr class="row-even"><td>14002</td>
+<td>The parameter <cite>payload</cite> is invalid.</td>
+</tr>
+<tr class="row-odd"><td>14003</td>
+<td>The query failed.</td>
+</tr>
+<tr class="row-even"><td>14004</td>
+<td>No results.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">TRY</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, bopol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/BUMO_Go_SDK Guide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
