@@ -3,4 +3,4 @@
    :maxdepth: 1
  
 
-   BUMO_Go_SDK_Guide.html
+   BUMO_Go_SDK_Guide
