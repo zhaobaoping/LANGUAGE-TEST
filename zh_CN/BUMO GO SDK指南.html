@@ -1,0 +1,4402 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Bumo GO SDK 指南 &#8212; TRY 1.0.0 文档</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="bumo-go-sdk">
+<h1>Bumo GO SDK 指南<a class="headerlink" href="#bumo-go-sdk" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id1">
+<h2>概述<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>本文档对Bumo Go SDK常用的接口进行了详细说明,
+使开发者能够更方便地写入和查询BU区块链。</p>
+</div>
+<div class="section" id="id2">
+<h2>包导入<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>项目所依赖的包在src文件夹中，获取包的方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">获取包</span>
+<span class="n">go</span> <span class="n">get</span> <span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bumoproject</span><span class="o">/</span><span class="n">bumo</span><span class="o">-</span><span class="n">sdk</span><span class="o">-</span><span class="n">go</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>术语<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p>本章节对该文档中使用到的术语进行了详细说明。</p>
+<p><strong>操作BU区块链</strong></p>
+<p>操作BU区块链是指向BU区块链写入或修改数据。</p>
+<p><strong>提交交易</strong></p>
+<p>提交交易是指向BU区块链发送修改的内容。</p>
+<p><strong>查询BU区块链</strong></p>
+<p>查询BU区块链是指查询BU区块链中的数据。</p>
+<p><strong>账户服务</strong></p>
+<p>账户服务是指提供账户相关的有效性校验与查询接口。</p>
+<p><strong>资产服务</strong></p>
+<p>资产服务是指提供资产相关的查询接口。</p>
+<p><strong>Ctp10Token服务</strong></p>
+<p>Ctp10Token服务是指提供合约资产相关的有效性校验与查询接口。</p>
+<p><strong>合约服务</strong></p>
+<p>合约服务是指提供合约相关的有效性校验与查询接口。</p>
+<p><strong>交易服务</strong></p>
+<p>交易服务是指提供交易相关的提交与查询接口。</p>
+<p><strong>区块服务</strong></p>
+<p>区块服务是指提供区块的查询接口。</p>
+<p><strong>账户nonce值</strong></p>
+<p>账户nonce值是指每个账户都维护的一个序列号，用于用户提交交易时标识交易的执行顺序。</p>
+</div>
+<div class="section" id="id4">
+<h2>请求参数与响应数据格式<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<p>本章节将详细介绍请求参数与响应数据的格式。</p>
+<div class="section" id="id5">
+<h3>请求参数<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h3>
+<p>接口的请求参数的类名，由 <strong>类名+方法名+Request</strong> 构成，例如:
+账户服务下的 <code class="docutils literal notranslate"><span class="pre">getInfo</span></code> 接口的请求参数格式是 <code class="docutils literal notranslate"><span class="pre">AccountGetInfoRequest</span></code> 。</p>
+<p>请求参数的成员，是各个接口的入参成员。例如：账户服务下的 <code class="docutils literal notranslate"><span class="pre">getInfo</span></code> 接口的入参成员是 <code class="docutils literal notranslate"><span class="pre">address</span></code> ，那么该接口的请求参数的完整结构如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">AccountGetInfoRequest</span> <span class="n">struct</span> <span class="p">{</span>
+<span class="n">address</span> <span class="n">string</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>响应数据<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
+<p>响应数据包含错误码，错误描述和result，响应数据的类名由 <strong>类名+方法名+Response</strong> 构成。</p>
+<p>例如: <code class="docutils literal notranslate"><span class="pre">Account.GetInfo()</span></code> 的结构体名是 <code class="docutils literal notranslate"><span class="pre">AccountGetInfoResponse</span></code> ：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">AccountGetInfoResponse</span> <span class="n">struct</span> <span class="p">{</span>
+  <span class="n">ErrorCode</span> <span class="nb">int</span>
+  <span class="n">ErrorDesc</span> <span class="n">string</span>
+  <span class="n">Result</span>  <span class="n">AccountGetInfoResult</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">注解</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ul class="last simple">
+<li>ErrorCode: 0表示无错误，大于0表示有错误。</li>
+<li>ErrorDesc: 空表示无错误，有内容表示有错误。</li>
+<li>Result: 返回结果的结构体，其中结构体由 <strong>类名+方法名+Result</strong> 构成。例如：<code class="docutils literal notranslate"><span class="pre">Account.GetNonce()</span></code> 的结构体名是 <code class="docutils literal notranslate"><span class="pre">AccountGetNonceResult</span></code> 。</li>
+</ul>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">AccountGetNonceResult</span> <span class="n">struct</span> <span class="p">{</span>
+  <span class="n">Nonce</span> <span class="n">int64</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>使用方法<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h2>
+<p>这里介绍SDK的使用流程，首先需要生成SDK实例，然后调用相应服务的接口，其中服务包括账户服务、资产服务、合约服务、交易服务、区块服务，接口按使用分类分为生成公私钥地址接口、有效性校验接口、查询接口、提交交易相关接口。</p>
+<div class="section" id="id8">
+<h3>包导入<a class="headerlink" href="#id8" title="永久链接至标题">¶</a></h3>
+<p>生成SDK实例之前导入使用的包：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">import</span><span class="p">(</span>
+  <span class="s2">&quot;github.com/bumoproject/bumo-sdk-go/src/model&quot;</span>
+  <span class="s2">&quot;github.com/bumoproject/bumo-sdk-go/src/sdk&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sdk">
+<h3>生成SDK实例<a class="headerlink" href="#sdk" title="永久链接至标题">¶</a></h3>
+<p>初始化SDK结构方法：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">testSdk</span> <span class="n">sdk</span><span class="o">.</span><span class="n">sdk</span>
+</pre></div>
+</div>
+<p>调用SDK的接口Init：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="p">:</span><span class="o">=</span><span class="s2">&quot;http://seed1.bumotest.io:26002&quot;</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">SDKInitRequest</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetUrl</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Init</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id9">
+<h3>生成公私钥地址<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h3>
+<p>通过调用Account的Create生成账户，方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span><span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">Create</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id10">
+<h3>有效性校验<a class="headerlink" href="#id10" title="永久链接至标题">¶</a></h3>
+<p>有效性校验接口用于校验信息的有效性，直接调用相应的接口即可，比如，校验账户地址有效性，调用如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">初始化传入参数</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountCheckValidRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="o">//</span><span class="n">调用接口检查</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">CheckValid</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h3>查询<a class="headerlink" href="#id11" title="永久链接至标题">¶</a></h3>
+<p>使用查询接口时可直接调用，如查询账户信息方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">初始化传入参数</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetInfoRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="o">//</span><span class="n">调用接口查询</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id12">
+<h3>提交交易<a class="headerlink" href="#id12" title="永久链接至标题">¶</a></h3>
+<p>提交交易的过程包括以下几步：</p>
+<p><a class="reference internal" href="#nonce">1. 获取账户nonce值</a></p>
+<p><a class="reference internal" href="#id13">2. 构建操作</a></p>
+<p><a class="reference internal" href="#blob">3. 构建交易Blob</a></p>
+<p><a class="reference internal" href="#id14">4. 签名交易</a></p>
+<p><a class="reference internal" href="#id15">5. 广播交易</a></p>
+<div class="section" id="nonce">
+<h4>1. 获取账户nonce值<a class="headerlink" href="#nonce" title="永久链接至标题">¶</a></h4>
+<p>开发者可自己维护各个账户nonce，在提交完一个交易后，nonce值自动递增1，这样可以在短时间内发送多笔交易；否则，必须等上一个交易执行完成后，账户的nonce值才会加1。接口调用如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">初始化请求参数</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetNonceRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="o">//</span><span class="n">调用GetNonce接口</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetNonce</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id13">
+<h4>2. 构建操作<a class="headerlink" href="#id13" title="永久链接至标题">¶</a></h4>
+<p>这里的操作是指在交易中做的一些动作。例如：构建发送BU操作BUSendOperation，调用如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">buSendOperation</span> <span class="n">model</span><span class="o">.</span><span class="n">BUSendOperation</span>
+<span class="n">buSendOperation</span><span class="o">.</span><span class="n">Init</span><span class="p">()</span>
+<span class="n">var</span> <span class="n">amount</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQVU86Jm4FeRW4JcQTD9Rx9NkUkHikYGp6z&quot;</span>
+<span class="n">buSendOperation</span><span class="o">.</span><span class="n">SetAmount</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="n">buSendOperation</span><span class="o">.</span><span class="n">SetDestAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="blob">
+<h4>3. 构建交易Blob<a class="headerlink" href="#blob" title="永久链接至标题">¶</a></h4>
+<p>构建交易Blob接口用于生成交易Blob串，接口调用如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">初始化传入参数</span>
+<span class="n">var</span> <span class="n">reqDataBlob</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionBuildBlobRequest</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetSourceAddress</span><span class="p">(</span><span class="n">sourceAddress</span><span class="p">)</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetFeeLimit</span><span class="p">(</span><span class="n">feeLimit</span><span class="p">)</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetGasPrice</span><span class="p">(</span><span class="n">gasPrice</span><span class="p">)</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetNonce</span><span class="p">(</span><span class="n">senderNonce</span><span class="p">)</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetOperation</span><span class="p">(</span><span class="n">buSendOperation</span><span class="p">)</span>
+<span class="o">//</span><span class="n">调用BuildBlob接口</span>
+<span class="n">resDataBlob</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">BuildBlob</span><span class="p">(</span><span class="n">reqDataBlob</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">注解</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="last">gasPrice和feeLimit的单位是MO，且 1 BU =10^8 MO。</p>
+</div>
+</div>
+<div class="section" id="id14">
+<h4>4. 签名交易<a class="headerlink" href="#id14" title="永久链接至标题">¶</a></h4>
+<p>签名交易接口用于交易发起者使用私钥对交易进行签名。接口调用如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">初始化传入参数</span>
+<span class="n">PrivateKey</span> <span class="p">:</span><span class="o">=</span> <span class="p">[]</span><span class="n">string</span><span class="p">{</span><span class="s2">&quot;privbUPxs6QGkJaNdgWS2hisny6ytx1g833cD7V9C3YET9mJ25wdcq6h&quot;</span><span class="p">}</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSignRequest</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlob</span><span class="p">(</span><span class="n">resDataBlob</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Blob</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetPrivateKeys</span><span class="p">(</span><span class="n">PrivateKey</span><span class="p">)</span>
+<span class="o">//</span><span class="n">调用Sign接口</span>
+<span class="n">resDataSign</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">Sign</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id15">
+<h4>5. 广播交易<a class="headerlink" href="#id15" title="永久链接至标题">¶</a></h4>
+<p>广播交易接口用于向BU区块链发送交易，触发交易的执行。接口调用如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">初始化传入参数</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSubmitRequest</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlob</span><span class="p">(</span><span class="n">resDataBlob</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Blob</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetSignatures</span><span class="p">(</span><span class="n">resDataSign</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Signatures</span><span class="p">)</span>
+<span class="o">//</span><span class="n">调用Submit接口</span>
+<span class="n">resDataSubmit</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">Submit</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="id16">
+<h2>账户服务<a class="headerlink" href="#id16" title="永久链接至标题">¶</a></h2>
+<p>账户服务主要是账户相关的接口，包括7个接口： <code class="docutils literal notranslate"><span class="pre">CheckValid</span></code>、<code class="docutils literal notranslate"><span class="pre">Create</span></code>、<code class="docutils literal notranslate"><span class="pre">GetInfo-Account</span></code>、<code class="docutils literal notranslate"><span class="pre">GetNonce</span></code>、
+<code class="docutils literal notranslate"><span class="pre">GetBalance-Account</span></code>、<code class="docutils literal notranslate"><span class="pre">GetAssets</span></code>、<code class="docutils literal notranslate"><span class="pre">GetMetadata</span></code>。</p>
+<div class="section" id="checkvalid">
+<h3>CheckValid<a class="headerlink" href="#checkvalid" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">CheckValid</span></code> 接口用于检测账户地址的有效性。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CheckValid</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountCheckValidRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">AccountCheckValidResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="23%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>address</td>
+<td>string</td>
+<td>待检测的账户地址</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="23%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>IsValid</td>
+<td>string</td>
+<td>账户地址是否有效</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="39%" />
+<col width="22%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountCheckValidRequest</span>
+<span class="n">address</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">CheckValid</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">IsValid</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create">
+<h3>Create<a class="headerlink" href="#create" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Create</span></code> 接口用于形成私钥对。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Create</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountCreateResponse</span>
+</pre></div>
+</div>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="46%" />
+<col width="31%" />
+<col width="23%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>PrivateKey</td>
+<td>string</td>
+<td>私钥</td>
+</tr>
+<tr class="row-odd"><td>PublicKey</td>
+<td>string</td>
+<td>公钥</td>
+</tr>
+<tr class="row-even"><td>Address</td>
+<td>string</td>
+<td>地址</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">Create</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Address:&quot;</span><span class="p">,</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Address</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;PrivateKey:&quot;</span><span class="p">,</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">PrivateKey</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;PublicKey:&quot;</span><span class="p">,</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">PublicKey</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getinfo-account">
+<h3>GetInfo-Account<a class="headerlink" href="#getinfo-account" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetInfo-Account</span></code> 接口用于查询账户信息。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetInfo</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetInfoRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetInfoResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="23%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>address</td>
+<td>string</td>
+<td>待检测的账户地址</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="42%" />
+<col width="37%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>string</td>
+<td>账户地址</td>
+</tr>
+<tr class="row-odd"><td>Balance</td>
+<td>int64</td>
+<td>账户余额</td>
+</tr>
+<tr class="row-even"><td>Nonce</td>
+<td>int64</td>
+<td>账户交易序列号</td>
+</tr>
+<tr class="row-odd"><td>Priv</td>
+<td><a class="reference internal" href="#priv">Priv</a></td>
+<td>账户权限</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="41%" />
+<col width="14%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the blockchain</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetInfoRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Info:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id17">
+<h4>接口对象类型参考<a class="headerlink" href="#id17" title="永久链接至标题">¶</a></h4>
+<div class="section" id="priv">
+<h5>Priv<a class="headerlink" href="#priv" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="36%" />
+<col width="32%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MasterWeight</td>
+<td>int64</td>
+<td>账户自身权重</td>
+</tr>
+<tr class="row-odd"><td>Signers</td>
+<td>[] <a class="reference internal" href="#signer">Signer</a></td>
+<td>签名者权重</td>
+</tr>
+<tr class="row-even"><td>Thresholds</td>
+<td><a class="reference internal" href="#threshold">Threshold</a></td>
+<td>门限</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="signer">
+<h5>Signer<a class="headerlink" href="#signer" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="26%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>string</td>
+<td>签名账户地址</td>
+</tr>
+<tr class="row-odd"><td>Weight</td>
+<td>int64</td>
+<td>签名账户权重</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="threshold">
+<h5>Threshold<a class="headerlink" href="#threshold" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="35%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TxThreshold</td>
+<td>string</td>
+<td>交易默认门限</td>
+</tr>
+<tr class="row-odd"><td>TypeThresholds</td>
+<td><a class="reference internal" href="#typethreshold">TypeThreshold</a></td>
+<td>不同类型交易的门限</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="typethreshold">
+<h5>TypeThreshold<a class="headerlink" href="#typethreshold" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="39%" />
+<col width="25%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Type</td>
+<td>int64</td>
+<td>操作类型</td>
+</tr>
+<tr class="row-odd"><td>Threshold</td>
+<td>int64</td>
+<td>门限</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="getnonce">
+<h3>GetNonce<a class="headerlink" href="#getnonce" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetNonce</span></code> 接口用于获取账户的nonce值。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetNonce</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetNonceRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetNonceResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="23%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>address</td>
+<td>string</td>
+<td>待检测的账户地址</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="22%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>nonce</td>
+<td>long</td>
+<td>该账户的交易序列号</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="41%" />
+<col width="14%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetNonceRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Nonce</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getbalance-account">
+<h3>GetBalance-Account<a class="headerlink" href="#getbalance-account" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetBalance-Account</span></code> 接口用于获取账户的Balance值。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetBalance</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetBalanceRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetBalanceResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="23%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>address</td>
+<td>string</td>
+<td>待检测的账户地址</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="23%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Balance</td>
+<td>int64</td>
+<td>该账户的余额</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="41%" />
+<col width="14%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetBalanceRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetBalance</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Balance&quot;</span><span class="p">,</span> <span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Balance</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getassets">
+<h3>GetAssets<a class="headerlink" href="#getassets" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetAssets</span></code> 接口用于获取账户的Asset值。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetAssets</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetAssetsRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetAssetsResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="23%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>address</td>
+<td>string</td>
+<td>待检测的账户地址</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="44%" />
+<col width="31%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Assets</td>
+<td>[] <a class="reference internal" href="#asset">Asset</a></td>
+<td>账户资产</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="41%" />
+<col width="14%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetAssetsRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQtfFxpQP9JCFgmu4WBojBbEnVyQGaJDgGn&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetAssets</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Assets</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Assets:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id18">
+<h4>接口对象类型参考<a class="headerlink" href="#id18" title="永久链接至标题">¶</a></h4>
+<div class="section" id="asset">
+<h5>Asset<a class="headerlink" href="#asset" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="29%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Key</td>
+<td><a class="reference internal" href="#key">key</a></td>
+<td>资产惟一标识</td>
+</tr>
+<tr class="row-odd"><td>Amount</td>
+<td>int64</td>
+<td>资产数量</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="key">
+<h5>Key<a class="headerlink" href="#key" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="21%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Code</td>
+<td>string</td>
+<td>资产编码，长度[1 64]</td>
+</tr>
+<tr class="row-odd"><td>Issuer</td>
+<td>string</td>
+<td>资产发行账户地址</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="getmetadata">
+<h3>GetMetadata<a class="headerlink" href="#getmetadata" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetMetadata</span></code> 接口用来获取账户的Metadata信息。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetMetadata</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetMetadataRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">AccountGetMetadataResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="15%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>address</td>
+<td>string</td>
+<td>待检测的账户地址</td>
+</tr>
+<tr class="row-odd"><td>key</td>
+<td>string</td>
+<td>选填，metadata关键字，长度[1, 1024]</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="58%" />
+<col width="15%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Metadatas</td>
+<td>[] <a class="reference internal" href="BUMO_Go_SDK Guide.html#metadata-1"><span class="std std-ref">Metadata</span></a></td>
+<td>账户</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="10%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to the network</td>
+</tr>
+<tr class="row-even"><td>INVALID_DATAKEY_ERROR</td>
+<td>11011</td>
+<td>The length of key must be between 1 and 1024</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AccountGetMetadataRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQemmMwmRQY1JkcU7w3nhruoX5N3j6C29uo&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Metadatas</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Metadatas:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id19">
+<h4>接口对象类型参考<a class="headerlink" href="#id19" title="永久链接至标题">¶</a></h4>
+<div class="section" id="metadata">
+<span id="metadata-1"></span><h5>Metadata<a class="headerlink" href="#metadata" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="23%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Key</td>
+<td>string</td>
+<td>metadata的关键词</td>
+</tr>
+<tr class="row-odd"><td>Value</td>
+<td>string</td>
+<td>metadata的内容</td>
+</tr>
+<tr class="row-even"><td>Version</td>
+<td>int64</td>
+<td>metadata的版本</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="id20">
+<h2>资产服务<a class="headerlink" href="#id20" title="永久链接至标题">¶</a></h2>
+<p>资产服务主要是资产相关的接口，目前有1个接口：<code class="docutils literal notranslate"><span class="pre">GetInfo</span></code> 。</p>
+<div class="section" id="getinfo-asset">
+<h3>GetInfo-Asset<a class="headerlink" href="#getinfo-asset" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetInfo-Asset</span></code> 接口用于获取账户指定资产数量。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetInfo</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">AssetGetInfoRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">AssetGetInfoResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="17%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>address</td>
+<td>string</td>
+<td>必填，待查询的账户地址</td>
+</tr>
+<tr class="row-odd"><td>code</td>
+<td>string</td>
+<td>必填，资产编码，长度[1, 64]</td>
+</tr>
+<tr class="row-even"><td>issuer</td>
+<td>string</td>
+<td>必填，资产发行账户地址</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="49%" />
+<col width="29%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Assets</td>
+<td>[] <a class="reference internal" href="#asset">asset</a></td>
+<td>账户资产</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="47%" />
+<col width="20%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_ADDRESS_ERROR</td>
+<td>11006</td>
+<td>Invalid address</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect
+to the network</td>
+</tr>
+<tr class="row-even"><td>INVALID_ASSET_CODE_ERROR</td>
+<td>11023</td>
+<td>The length of
+code must
+be between 1 and
+1024</td>
+</tr>
+<tr class="row-odd"><td>INVALID_ISSUER_ADDRESS
+_ERROR</td>
+<td>11027</td>
+<td>Invalid issuer
+address</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">AssetGetInfoRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQemmMwmRQY1JkcU7w3nhruoX5N3j6C29uo&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetIssuer</span><span class="p">(</span><span class="s2">&quot;buQnc3AGCo6ycWJCce516MDbPHKjK7ywwkuo&quot;</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetCode</span><span class="p">(</span><span class="s2">&quot;HNC&quot;</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Token</span><span class="o">.</span><span class="n">Asset</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Assets</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Assets:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id21">
+<h2>合约服务<a class="headerlink" href="#id21" title="永久链接至标题">¶</a></h2>
+<p>合约服务主要是合约相关的接口，目前有1个接口: <code class="docutils literal notranslate"><span class="pre">GetInfo</span></code> 。</p>
+<div class="section" id="getinfo-contract">
+<h3>GetInfo-contract<a class="headerlink" href="#getinfo-contract" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetInfo-contract</span></code> 接口用来获取合约信息。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetInfo</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ContractGetInfoRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">ContractGetInfoResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="18%" />
+<col width="44%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>contractAddress</td>
+<td>string</td>
+<td>必填，合约账户地址</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="24%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Type</td>
+<td>int64</td>
+<td>合约类型，默认0</td>
+</tr>
+<tr class="row-odd"><td>Payload</td>
+<td>string</td>
+<td>合约代码</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="22%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_CONTRACTADDRESS
+_ERROR</td>
+<td>11037</td>
+<td>Invalid contract
+address</td>
+</tr>
+<tr class="row-odd"><td>CONTRACTADDRESS_NOT_CON
+TRACTACCOUNT_ERROR</td>
+<td>11038</td>
+<td>contractAddress
+is not a
+contract account</td>
+</tr>
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect
+to the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">ContractGetInfoRequest</span>
+<span class="n">var</span> <span class="n">address</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQfnVYgXuMo3rvCEpKA6SfRrDpaz8D8A9Ea&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetAddress</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Contract</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+  <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Contract</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Contract:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id22">
+<h2>交易服务<a class="headerlink" href="#id22" title="永久链接至标题">¶</a></h2>
+<p>交易服务主要是交易相关的接口，目前有5个接口：<code class="docutils literal notranslate"><span class="pre">EvaluateFee</span></code>、<code class="docutils literal notranslate"><span class="pre">BuildBlob</span></code>、
+<code class="docutils literal notranslate"><span class="pre">Sign</span></code>、<code class="docutils literal notranslate"><span class="pre">Submit</span></code>、<code class="docutils literal notranslate"><span class="pre">GetInfo-transaction</span></code>。</p>
+<div class="section" id="evaluatefee">
+<h3>EvaluateFee<a class="headerlink" href="#evaluatefee" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">EvaluateFee</span></code> 接口用来评估交易费用。</p>
+<p>调用方法如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EvaluateFee</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionEvaluateFeeRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionEvaluateFeeResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="27%" />
+<col width="43%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>必填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>nonce</td>
+<td>int64</td>
+<td>必填，待发起的交易序列号，
+大小[1,max(int64)]</td>
+</tr>
+<tr class="row-even"><td>operations</td>
+<td>list.List</td>
+<td>必填，待提交的操作列表，不能为空</td>
+</tr>
+<tr class="row-odd"><td>signatureNumber</td>
+<td>string</td>
+<td>选填，待签名者的数量，默认是1，
+大小[1,max(int32)]</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+<tr class="row-odd"><td>ceilLedgerSeq</td>
+<td>int64</td>
+<td>选填，距离当前区块高度指定差值
+的区块内执行的限制，当区块超出
+当时区块高度与所设差值的和后，
+交易执行失败。必须大于等于0，
+是0时不限制</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="37%" />
+<col width="26%" />
+<col width="37%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>FeeLimit</td>
+<td>int64</td>
+<td>交易费用</td>
+</tr>
+<tr class="row-odd"><td>GasPrice</td>
+<td>int64</td>
+<td>打包费用</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="47%" />
+<col width="19%" />
+<col width="34%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_SOURCEADDRESS
+_ERROR</td>
+<td>11002</td>
+<td>Invalid
+sourceAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_NONCE_ERROR</td>
+<td>11048</td>
+<td>Nonce must be
+between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_OPERATIONS
+_ERROR</td>
+<td>11051</td>
+<td>Operations
+cannot be
+resolved</td>
+</tr>
+<tr class="row-odd"><td>OPERATIONS_ONE_ERROR</td>
+<td>11053</td>
+<td>One of the
+operations cannot
+be resolved</td>
+</tr>
+<tr class="row-even"><td>INVALID_SIGNATURENUMBER
+_ERROR</td>
+<td>11054</td>
+<td>SignatureNumber
+must be between
+1 and max(int32)</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqDataOperation</span> <span class="n">model</span><span class="o">.</span><span class="n">BUSendOperation</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">Init</span><span class="p">()</span>
+<span class="n">var</span> <span class="n">amount</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">SetAmount</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">destAddress</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQVU86Jm4FeRW4JcQTD9Rx9NkUkHikYGp6z&quot;</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">SetDestAddress</span><span class="p">(</span><span class="n">destAddress</span><span class="p">)</span>
+
+<span class="n">var</span> <span class="n">reqDataEvaluate</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionEvaluateFeeRequest</span>
+<span class="n">var</span> <span class="n">sourceAddress</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQVU86Jm4FeRW4JcQTD9Rx9NkUkHikYGp6z&quot;</span>
+<span class="n">reqDataEvaluate</span><span class="o">.</span><span class="n">SetSourceAddress</span><span class="p">(</span><span class="n">sourceAddress</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">nonce</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">88</span>
+<span class="n">reqDataEvaluate</span><span class="o">.</span><span class="n">SetNonce</span><span class="p">(</span><span class="n">nonce</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">signatureNumber</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;3&quot;</span>
+<span class="n">reqDataEvaluate</span><span class="o">.</span><span class="n">SetSignatureNumber</span><span class="p">(</span><span class="n">signatureNumber</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">SetCeilLedgerSeq</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">reqDataEvaluate</span><span class="o">.</span><span class="n">SetCeilLedgerSeq</span><span class="p">(</span><span class="n">SetCeilLedgerSeq</span><span class="p">)</span>
+<span class="n">reqDataEvaluate</span><span class="o">.</span><span class="n">SetOperation</span><span class="p">(</span><span class="n">reqDataOperation</span><span class="p">)</span>
+<span class="n">resDataEvaluate</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">EvaluateFee</span><span class="p">(</span><span class="n">reqDataEvaluate</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resDataEvaluate</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resDataEvaluate</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Evaluate:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="buildblob">
+<h3>BuildBlob<a class="headerlink" href="#buildblob" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">BuildBlob</span></code> 接口用于序列化交易，生成交易Blob串，便于网络传输。在调用BuildBlob之前需要构建一些操作对象，目前的操作对象有16种,参见 <a class="reference internal" href="#baseoperation">BaseOperation</a>。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BuildBlob</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionBuildBlobRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionBuildBlobResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="16%" />
+<col width="49%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>必填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>nonce</td>
+<td>int64</td>
+<td>必填，待发起的交易序列号，
+函数里+1，大小[1,max(int64)]</td>
+</tr>
+<tr class="row-even"><td>gasPrice</td>
+<td>int64</td>
+<td>必填，交易打包费用，单位MO，
+1BU = 10^8 MO，大小[1000,
+max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>feeLimit</td>
+<td>int64</td>
+<td>必填，交易手续费，单位MO，1
+BU = 10^8 MO，
+大小[1,max(int64)]</td>
+</tr>
+<tr class="row-even"><td>operations</td>
+<td>list.List</td>
+<td>必填，待提交的操作列表，
+不能为空</td>
+</tr>
+<tr class="row-odd"><td>ceilLedgerSeq</td>
+<td>int64</td>
+<td>选填，距离当前区块高度指定
+差值的区块内执行的限制，
+当区块超出当时区块高度与
+所设差值的和后，交易执行失败。
+必须大于等于0，是0时不限制</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="13%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TransactionBlob</td>
+<td>string</td>
+<td>Transaction序列化后的16进制字符串</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="22%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_SOURCEADDRESS
+_ERROR</td>
+<td>11002</td>
+<td>Invalid
+sourceAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_NONCE_ERROR</td>
+<td>11048</td>
+<td>Nonce must be
+between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_DESTADDRESS
+_ERROR</td>
+<td>11003</td>
+<td>Invalid
+destAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_INITBALANCE
+_ERROR</td>
+<td>11004</td>
+<td>InitBalance must
+be between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>SOURCEADDRESS_EQUAL
+_DESTADDRESS_ERROR</td>
+<td>11005</td>
+<td>SourceAddress
+cannot be equal
+to destAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_ISSUE_AMMOUNT
+_ERROR</td>
+<td>11008</td>
+<td>AssetAmount to
+be issued
+must be between
+1 and max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_DATAKEY_ERROR</td>
+<td>11011</td>
+<td>The length of
+key must be
+between 1 and
+1024</td>
+</tr>
+<tr class="row-odd"><td>INVALID_DATAVALUE_ERROR</td>
+<td>11012</td>
+<td>The length of
+value must be
+between 0 and
+256k</td>
+</tr>
+<tr class="row-even"><td>INVALID_DATAVERSION
+_ERROR</td>
+<td>11013</td>
+<td>The version must
+be greater than
+or equal to 0</td>
+</tr>
+<tr class="row-odd"><td>INVALID_MASTERWEIGHT
+_ERROR</td>
+<td>11015</td>
+<td>MasterWeight
+must be between
+0 and
+max(uint32)</td>
+</tr>
+<tr class="row-even"><td>INVALID_SIGNER_ADDRESS
+_ERROR</td>
+<td>11016</td>
+<td>Invalid signer
+address</td>
+</tr>
+<tr class="row-odd"><td>INVALID_SIGNER_WEIGHT
+_ERROR</td>
+<td>11017</td>
+<td>Signer weight
+must be between
+0 and
+max(uint32)</td>
+</tr>
+<tr class="row-even"><td>INVALID_TX_THRESHOLD
+_ERROR</td>
+<td>11018</td>
+<td>TxThreshold must
+be between 0 and
+max(int64)</td>
+</tr>
+<tr class="row-odd"><td>INVALID_OPERATION_TYPE
+_ERROR</td>
+<td>11019</td>
+<td>Operation type
+must be between
+1 and 100</td>
+</tr>
+<tr class="row-even"><td>INVALID_TYPE_THRESHOLD
+_ERROR</td>
+<td>11020</td>
+<td>TypeThreshold
+must be between
+0 and max(int64)</td>
+</tr>
+<tr class="row-odd"><td>INVALID_ASSET_CODE
+_ERROR</td>
+<td>11023</td>
+<td>The length of
+code must be
+between 1 and 64</td>
+</tr>
+<tr class="row-even"><td>INVALID_ASSET_AMOUNT
+_ERROR</td>
+<td>11024</td>
+<td>AssetAmount must
+be between 0 and
+max(int64)</td>
+</tr>
+<tr class="row-odd"><td>INVALID_BU_AMOUNT_ERROR</td>
+<td>11026</td>
+<td>BuAmount must be
+between 0 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_ISSUER_ADDRESS
+_ERROR</td>
+<td>11027</td>
+<td>Invalid issuer
+address</td>
+</tr>
+<tr class="row-odd"><td>NO_SUCH_TOKEN_ERROR</td>
+<td>11030</td>
+<td>The length of
+ctp must be
+between 1 and 64</td>
+</tr>
+<tr class="row-even"><td>INVALID_TOKEN_NAME
+_ERROR</td>
+<td>11031</td>
+<td>The length of
+token name must
+be between 1 and
+1024</td>
+</tr>
+<tr class="row-odd"><td>INVALID_TOKEN_SYMBOL
+_ERROR</td>
+<td>11032</td>
+<td>The length of
+symbol must be
+between 1 and
+1024</td>
+</tr>
+<tr class="row-even"><td>INVALID_TOKEN_DECIMALS
+_ERROR</td>
+<td>11033</td>
+<td>Decimals must be
+between 0 and 8</td>
+</tr>
+<tr class="row-odd"><td>INVALID_TOKEN_TOTALSUPP
+LY_ERROR</td>
+<td>11034</td>
+<td>TotalSupply must
+be between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_TOKENOWNER
+_ERRP</td>
+<td>11035</td>
+<td>Invalid token
+owner</td>
+</tr>
+<tr class="row-odd"><td>INVALID_CONTRACTADDRESS
+_ERROR</td>
+<td>11037</td>
+<td>Invalid contract
+address</td>
+</tr>
+<tr class="row-even"><td>CONTRACTADDRESS_NOT
+_CONTRACTACCOUNT_ERRO</td>
+<td>11038</td>
+<td>ContractAddress
+is not a
+contract account</td>
+</tr>
+<tr class="row-odd"><td>INVALID_TOKEN_AMOUNT
+_ERROR</td>
+<td>11039</td>
+<td>Amount
+must be between
+1 and max(int64)</td>
+</tr>
+<tr class="row-even"><td>SOURCEADDRESS_EQUAL
+_CONTRACTADDRESS_ERROR</td>
+<td>11040</td>
+<td>SourceAddress
+cannot be equal
+to
+contractAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_FROMADDRESS
+_ERROR</td>
+<td>11041</td>
+<td>Invalid
+fromAddress</td>
+</tr>
+<tr class="row-even"><td>FROMADDRESS_EQUAL_DESTA
+DDRESS_ERROR</td>
+<td>11042</td>
+<td>FromAddress
+cannot be equal
+to destAddress</td>
+</tr>
+<tr class="row-odd"><td>INVALID_SPENDER_ERROR</td>
+<td>11043</td>
+<td>Invalid spender</td>
+</tr>
+<tr class="row-even"><td>PAYLOAD_EMPTY_ERROR</td>
+<td>11044</td>
+<td>Payload cannot
+be empty</td>
+</tr>
+<tr class="row-odd"><td>INVALID_LOG_TOPIC
+_ERROR</td>
+<td>11045</td>
+<td>The length of
+log topic must
+be between 1
+and 128</td>
+</tr>
+<tr class="row-even"><td>INVALID_LOG_DATA
+_ERROR</td>
+<td>11046</td>
+<td>The length of
+log data must be
+between 1 and
+1024</td>
+</tr>
+<tr class="row-odd"><td>INVALID_CONTRACT_TYPE
+_ERROR</td>
+<td>11047</td>
+<td>Type must be
+greater than or
+equal to 0</td>
+</tr>
+<tr class="row-even"><td>INVALID_NONCE_ERROR</td>
+<td>11048</td>
+<td>Nonce must be
+between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-odd"><td>INVALID_GASPRICE
+_ERROR</td>
+<td>11049</td>
+<td>GasPrice must be
+between 1000 and
+max(int64)</td>
+</tr>
+<tr class="row-even"><td>INVALID_FEELIMIT_ERROR</td>
+<td>11050</td>
+<td>FeeLimit must be
+between 1 and
+max(int64)</td>
+</tr>
+<tr class="row-odd"><td>OPERATIONS_EMPTY_ERROR</td>
+<td>11051</td>
+<td>Operations
+cannot be empty</td>
+</tr>
+<tr class="row-even"><td>INVALID_CEILLEDGERSEQ
+_ERROR</td>
+<td>11052</td>
+<td>CeilLedgerSeq
+must be equal or
+greater than 0</td>
+</tr>
+<tr class="row-odd"><td>OPERATIONS_ONE_ERROR</td>
+<td>11053</td>
+<td>One of the
+operations
+cannot be
+resolved</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqDataOperation</span> <span class="n">model</span><span class="o">.</span><span class="n">BUSendOperation</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">Init</span><span class="p">()</span>
+<span class="n">var</span> <span class="n">amount</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">var</span> <span class="n">destAddress</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQVU86Jm4FeRW4JcQTD9Rx9NkUkHikYGp6z&quot;</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">SetAmount</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="n">reqDataOperation</span><span class="o">.</span><span class="n">SetDestAddress</span><span class="p">(</span><span class="n">destAddress</span><span class="p">)</span>
+
+<span class="n">var</span> <span class="n">reqDataBlob</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionBuildBlobRequest</span>
+<span class="n">var</span> <span class="n">sourceAddressBlob</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;buQemmMwmRQY1JkcU7w3nhruoX5N3j6C29uo&quot;</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetSourceAddress</span><span class="p">(</span><span class="n">sourceAddressBlob</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">feeLimit</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">1000000000</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetFeeLimit</span><span class="p">(</span><span class="n">feeLimit</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">gasPrice</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetGasPrice</span><span class="p">(</span><span class="n">gasPrice</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">nonce</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">88</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetNonce</span><span class="p">(</span><span class="n">nonce</span><span class="p">)</span>
+<span class="n">reqDataBlob</span><span class="o">.</span><span class="n">SetOperation</span><span class="p">(</span><span class="n">reqDataOperation</span><span class="p">)</span>
+
+<span class="n">resDataBlob</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">BuildBlob</span><span class="p">(</span><span class="n">reqDataBlob</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resDataBlob</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Blob:&quot;</span><span class="p">,</span> <span class="n">resDataBlob</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="baseoperation">
+<h4>BaseOperation<a class="headerlink" href="#baseoperation" title="永久链接至标题">¶</a></h4>
+<p>在调用BuildBlob之前需要构建一些操作对象，目前的操作对象有16种: <code class="docutils literal notranslate"><span class="pre">AccountActivateOperation</span></code>、<code class="docutils literal notranslate"><span class="pre">AccountSetMetadataOperation</span></code>、<code class="docutils literal notranslate"><span class="pre">AccountSetPrivilegeOperation</span></code>、
+<code class="docutils literal notranslate"><span class="pre">AssetIssueOperation</span></code>、<code class="docutils literal notranslate"><span class="pre">AssetSendOperation</span></code>、 <code class="docutils literal notranslate"><span class="pre">BUSendOperation</span></code>、<code class="docutils literal notranslate"><span class="pre">Ctp10TokenIssueOperation</span></code>、
+<code class="docutils literal notranslate"><span class="pre">Ctp10TokenTransferOperation</span></code>、<code class="docutils literal notranslate"><span class="pre">Ctp10TokenTransferFromOperation</span></code>、<code class="docutils literal notranslate"><span class="pre">Ctp10TokenApproveOperation</span></code>、
+<code class="docutils literal notranslate"><span class="pre">Ctp10TokenAssignOperation</span></code>、<code class="docutils literal notranslate"><span class="pre">Ctp10TokenChangeOwnerOperation</span></code>、<code class="docutils literal notranslate"><span class="pre">ContractCreateOperation</span></code>、
+<code class="docutils literal notranslate"><span class="pre">ContractInvokeByAssetOperation</span></code>、<code class="docutils literal notranslate"><span class="pre">ContractInvokeByBUOperation</span></code>、<code class="docutils literal notranslate"><span class="pre">LogCreateOperation</span></code>。</p>
+<p>AccountActivateOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="13%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，操作源账户</td>
+</tr>
+<tr class="row-odd"><td>destAddress</td>
+<td>string</td>
+<td>必填，目标账户地址</td>
+</tr>
+<tr class="row-even"><td>initBalance</td>
+<td>int64</td>
+<td>必填，初始化资产，大小[1, max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>AccountSetMetadataOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="13%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，操作源账户</td>
+</tr>
+<tr class="row-odd"><td>key</td>
+<td>string</td>
+<td>必填，metadata的关键词，长度[1, 1024]</td>
+</tr>
+<tr class="row-even"><td>value</td>
+<td>string</td>
+<td>选填，metadata的内容，长度[0, 256K]</td>
+</tr>
+<tr class="row-odd"><td>version</td>
+<td>int64</td>
+<td>选填，metadata的版本</td>
+</tr>
+<tr class="row-even"><td>deleteFlag</td>
+<td>bool</td>
+<td>选填，是否删除metadata</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>AccountSetPrivilegeOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，操作源账户</td>
+</tr>
+<tr class="row-odd"><td>masterWeight</td>
+<td>string</td>
+<td>选填，账户自身权重，
+大小[0, max(uint32)]</td>
+</tr>
+<tr class="row-even"><td>signers</td>
+<td>[] <a class="reference internal" href="#signer">Signer</a></td>
+<td>选填，签名者权重列表</td>
+</tr>
+<tr class="row-odd"><td>txThreshold</td>
+<td>string</td>
+<td>选填，交易门限，
+大小[0,max(int64)]</td>
+</tr>
+<tr class="row-even"><td>typeThreshold</td>
+<td><a class="reference internal" href="#typethreshold">TypeThreshold</a></td>
+<td>选填，指定类型交易门限</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>AssetIssueOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="13%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>code</td>
+<td>string</td>
+<td>必填，资产编码，长度[1 64]</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>必填，资产发行数量，大小[1, max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>AssetSendOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="13%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>destAddress</td>
+<td>string</td>
+<td>必填，目标账户地址</td>
+</tr>
+<tr class="row-even"><td>code</td>
+<td>string</td>
+<td>必填，资产编码，长度[1 64]</td>
+</tr>
+<tr class="row-odd"><td>issuer</td>
+<td>string</td>
+<td>必填，资产发行账户地址</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>必填，资产数量，大小[ 0, max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>BUSendOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="13%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>destAddress</td>
+<td>string</td>
+<td>必填，目标账户地址</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>必填，资产发行数量，大小[0, max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenIssueOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="11%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>initBalance</td>
+<td>int64</td>
+<td>必填，给合约账户的初始化资产，大小[1, max(int64)]</td>
+</tr>
+<tr class="row-even"><td>name</td>
+<td>string</td>
+<td>必填，token名称，长度[1, 1024]</td>
+</tr>
+<tr class="row-odd"><td>symbol</td>
+<td>string</td>
+<td>必填，token符号，长度[1, 1024]</td>
+</tr>
+<tr class="row-even"><td>decimals</td>
+<td>int64</td>
+<td>必填，token数量的精度，大小[0, 8]</td>
+</tr>
+<tr class="row-odd"><td>supply</td>
+<td>int64</td>
+<td>必填，token发行的总供应量，大小[1, max(int64)]</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenTransferOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="11%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>必填，合约账户地址</td>
+</tr>
+<tr class="row-even"><td>destAddress</td>
+<td>string</td>
+<td>必填，待转移的目标账户地址</td>
+</tr>
+<tr class="row-odd"><td>amount</td>
+<td>int64</td>
+<td>必填，待转移的token数量，大小[1, max(int64)]</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenTransferFromOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="11%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>必填，合约账户地址</td>
+</tr>
+<tr class="row-even"><td>fromAddress</td>
+<td>string</td>
+<td>必填，待转移的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>destAddress</td>
+<td>string</td>
+<td>必填，待转移的目标账户地址</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>必填，待转移的token数量，大小[1, max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenApproveOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的
+源账户地址</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>必填，合约账户地址</td>
+</tr>
+<tr class="row-even"><td>spender</td>
+<td>string</td>
+<td>必填，授权的账户地址</td>
+</tr>
+<tr class="row-odd"><td>amount</td>
+<td>int64</td>
+<td>必填，被授权的
+待转移的token数量，
+大小[1,max(int64)]</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenAssignOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="11%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>必填，合约账户地址</td>
+</tr>
+<tr class="row-even"><td>destAddress</td>
+<td>string</td>
+<td>必填，待分配的目标账户地址</td>
+</tr>
+<tr class="row-odd"><td>amount</td>
+<td>int64</td>
+<td>必填，待分配的token数量，大小[1, max(int64)]</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>Ctp10TokenChangeOwnerOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="15%" />
+<col width="55%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>必填，合约账户地址</td>
+</tr>
+<tr class="row-even"><td>tokenOwner</td>
+<td>string</td>
+<td>必填，待分配的目标账户地址</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>ContractCreateOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="11%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>initBalance</td>
+<td>int64</td>
+<td>必填，给合约账户的初始化资产，大小[1, max(int64)]</td>
+</tr>
+<tr class="row-even"><td>initInput</td>
+<td>string</td>
+<td>选填，对应的合约初始化参数</td>
+</tr>
+<tr class="row-odd"><td>payload</td>
+<td>string</td>
+<td>必填，对应的合约代码</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>ContractInvokeByAssetOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="20%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的
+源账户地址</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>必填，合约账户地址</td>
+</tr>
+<tr class="row-even"><td>code</td>
+<td>string</td>
+<td>选填，资产编码，长
+度[0,64]，当为null时，
+仅触发合约</td>
+</tr>
+<tr class="row-odd"><td>issuer</td>
+<td>string</td>
+<td>选填，资产发行账户
+地址，当为null时，
+仅触发合约</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>选填，资产数量，
+大小[0,max(int64)]，
+当是0时，仅触发合约</td>
+</tr>
+<tr class="row-odd"><td>input</td>
+<td>string</td>
+<td>选填，待触发的合约的
+main()入参</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>ContractInvokeByBUOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="16%" />
+<col width="52%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>contractAddress</td>
+<td>string</td>
+<td>必填，合约账户地址</td>
+</tr>
+<tr class="row-even"><td>amount</td>
+<td>int64</td>
+<td>选填，资产发行数量，
+大小[0,max(int64)]，
+当0时仅触发合约</td>
+</tr>
+<tr class="row-odd"><td>input</td>
+<td>string</td>
+<td>选填，待触发的合约的main()入参</td>
+</tr>
+<tr class="row-even"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+<p>LogCreateOperation</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="15%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>sourceAddress</td>
+<td>string</td>
+<td>选填，发起该操作的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>topic</td>
+<td>string</td>
+<td>必填，日志主题，长度[1, 128]</td>
+</tr>
+<tr class="row-even"><td>data</td>
+<td>[]string</td>
+<td>必填，日志内容，每个字符串长度[1, 1024]</td>
+</tr>
+<tr class="row-odd"><td>metadata</td>
+<td>string</td>
+<td>选填，备注</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="sign">
+<h3>Sign<a class="headerlink" href="#sign" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Sign</span></code> 接口用于实现交易的签名。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Sign</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionSignRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSignResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="23%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blob</td>
+<td>string</td>
+<td>必填，待签名的交易Blob</td>
+</tr>
+<tr class="row-odd"><td>privateKeys</td>
+<td>[] string</td>
+<td>必填，私钥列表</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="38%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Signatures</td>
+<td>[] <a class="reference internal" href="#signature">signature</a></td>
+<td>签名后的数据列表</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="11%" />
+<col width="55%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOB_ERROR</td>
+<td>11056</td>
+<td>Invalid blob</td>
+</tr>
+<tr class="row-odd"><td>PRIVATEKEY_NULL_ERROR</td>
+<td>11057</td>
+<td>PrivateKeys cannot be empty</td>
+</tr>
+<tr class="row-even"><td>PRIVATEKEY_ONE_ERROR</td>
+<td>11058</td>
+<td>One of privateKeys error</td>
+</tr>
+<tr class="row-odd"><td>GET_ENCPUBLICKEY_ERROR</td>
+<td>14000</td>
+<td>The function ‘GetEncPublicKey’ failed</td>
+</tr>
+<tr class="row-even"><td>SIGN_ERROR</td>
+<td>14001</td>
+<td>The function ‘Sign’ failed</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PrivateKey</span> <span class="p">:</span><span class="o">=</span> <span class="p">[]</span><span class="n">string</span><span class="p">{</span><span class="s2">&quot;privbUPxs6QGkJaNdgWS2hisny6ytx1g833cD7V9C3YET9mJ25wdcq6h&quot;</span><span class="p">}</span>
+<span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSignRequest</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlob</span><span class="p">(</span><span class="n">resDataBlob</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Blob</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetPrivateKeys</span><span class="p">(</span><span class="n">PrivateKey</span><span class="p">)</span>
+<span class="n">resDataSign</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">Sign</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resDataSign</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Sign:&quot;</span><span class="p">,</span> <span class="n">resDataSign</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id23">
+<h4>接口对象类型参考<a class="headerlink" href="#id23" title="永久链接至标题">¶</a></h4>
+<div class="section" id="signature">
+<h5>Signature<a class="headerlink" href="#signature" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="37%" />
+<col width="23%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>signData</td>
+<td>int64</td>
+<td>签名后数据</td>
+</tr>
+<tr class="row-odd"><td>publicKey</td>
+<td>int64</td>
+<td>公钥</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="submit">
+<h3>Submit<a class="headerlink" href="#submit" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Submit</span></code> 接口用于提交交易。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Submit</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionSubmitRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSubmitResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="41%" />
+<col width="35%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blob</td>
+<td>string</td>
+<td>必填，交易blob</td>
+</tr>
+<tr class="row-odd"><td>signature</td>
+<td>[] <a class="reference internal" href="#signature">signature</a></td>
+<td>必填，签名列表</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="33%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Hash</td>
+<td>string</td>
+<td>交易hash</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="48%" />
+<col width="19%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOB_ERROR</td>
+<td>11052</td>
+<td>Invalid blob</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionSubmitRequest</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlob</span><span class="p">(</span><span class="n">resDataBlob</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Blob</span><span class="p">)</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetSignatures</span><span class="p">(</span><span class="n">resDataSign</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Signatures</span><span class="p">)</span>
+<span class="n">resDataSubmit</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">Submit</span><span class="p">(</span><span class="n">reqData</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resDataSubmit</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Hash:&quot;</span><span class="p">,</span> <span class="n">resDataSubmit</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Hash</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getinfo-transaction">
+<h3>GetInfo-transaction<a class="headerlink" href="#getinfo-transaction" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetInfo-transaction</span></code> 接口用于根据hash查询交易。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetInfo</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionGetInfoRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">TransactionGetInfoResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="33%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hash</td>
+<td>string</td>
+<td>交易hash</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="39%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TotalCount</td>
+<td>int64</td>
+<td>返回的总交易数</td>
+</tr>
+<tr class="row-odd"><td>Transactions</td>
+<td>[] <a class="reference internal" href="#transactionhistory">TransactionHistory</a></td>
+<td>交易内容</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">TransactionGetInfoRequest</span>
+<span class="n">var</span> <span class="nb">hash</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;cd33ad1e033d6dfe3db3a1d29a55e190935d9d1ff40a138d777e9406ebe0fdb1&quot;</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetHash</span><span class="p">(</span><span class="nb">hash</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Transaction</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;info:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id24">
+<h4>接口对象类型参考<a class="headerlink" href="#id24" title="永久链接至标题">¶</a></h4>
+<div class="section" id="transactionhistory">
+<h5>TransactionHistory<a class="headerlink" href="#transactionhistory" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="43%" />
+<col width="29%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>ActualFee</td>
+<td>string</td>
+<td>交易实际费用</td>
+</tr>
+<tr class="row-odd"><td>CloseTime</td>
+<td>int64</td>
+<td>交易关闭时间</td>
+</tr>
+<tr class="row-even"><td>ErrorCode</td>
+<td>int64</td>
+<td>交易错误码</td>
+</tr>
+<tr class="row-odd"><td>ErrorDesc</td>
+<td>string</td>
+<td>交易描述</td>
+</tr>
+<tr class="row-even"><td>Hash</td>
+<td>string</td>
+<td>交易hash</td>
+</tr>
+<tr class="row-odd"><td>LedgerSeq</td>
+<td>int64</td>
+<td>区块序列号</td>
+</tr>
+<tr class="row-even"><td>Transactions</td>
+<td><a class="reference internal" href="#transaction">Transaction</a></td>
+<td>交易内容列表</td>
+</tr>
+<tr class="row-odd"><td>Signatures</td>
+<td>[] <a class="reference internal" href="#signature">Signature</a></td>
+<td>签名列表</td>
+</tr>
+<tr class="row-even"><td>TxSize</td>
+<td>int64</td>
+<td>交易大小</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="transaction">
+<h5>Transaction<a class="headerlink" href="#transaction" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="34%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>SourceAddress</td>
+<td>string</td>
+<td>交易发起的源账户地址</td>
+</tr>
+<tr class="row-odd"><td>FeeLimit</td>
+<td>int64</td>
+<td>交易费用</td>
+</tr>
+<tr class="row-even"><td>GasPrice</td>
+<td>int64</td>
+<td>交易打包费用</td>
+</tr>
+<tr class="row-odd"><td>Nonce</td>
+<td>int64</td>
+<td>交易序列号</td>
+</tr>
+<tr class="row-even"><td>Operations</td>
+<td>[]  <a class="reference internal" href="#operation">Operation</a></td>
+<td>操作列表</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="operation">
+<h5>Operation<a class="headerlink" href="#operation" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="36%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Type</td>
+<td>int64</td>
+<td>操作类型</td>
+</tr>
+<tr class="row-odd"><td>SourceAddress</td>
+<td>string</td>
+<td>操作发起源账户地址</td>
+</tr>
+<tr class="row-even"><td>Metadata</td>
+<td>string</td>
+<td>备注</td>
+</tr>
+<tr class="row-odd"><td>CreateAccount</td>
+<td><a class="reference internal" href="#createaccount">CreateAccount</a></td>
+<td>创建账户操作</td>
+</tr>
+<tr class="row-even"><td>IssueAsset</td>
+<td><a class="reference internal" href="#issueasset">IssueAsset</a></td>
+<td>发行资产操作</td>
+</tr>
+<tr class="row-odd"><td>PayAsset</td>
+<td><a class="reference internal" href="#payasset">PayAsset</a></td>
+<td>转移资产操作</td>
+</tr>
+<tr class="row-even"><td>PayCoin</td>
+<td><a class="reference internal" href="#paycoin">PayCoin</a></td>
+<td>发送BU操作</td>
+</tr>
+<tr class="row-odd"><td>SetMetadata</td>
+<td><a class="reference internal" href="#setmetadata">SetMetadata</a></td>
+<td>设置metadata操作</td>
+</tr>
+<tr class="row-even"><td>SetPrivilege</td>
+<td><a class="reference internal" href="#setprivilege">SetPrivilege</a></td>
+<td>设置账户权限操作</td>
+</tr>
+<tr class="row-odd"><td>Log</td>
+<td><a class="reference internal" href="#log">Log</a></td>
+<td>记录日志</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="triggertransaction">
+<h5>TriggerTransaction<a class="headerlink" href="#triggertransaction" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="33%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hash</td>
+<td>string</td>
+<td>交易hash</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="createaccount">
+<h5>CreateAccount<a class="headerlink" href="#createaccount" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="40%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DestAddress</td>
+<td>string</td>
+<td>目标账户地址</td>
+</tr>
+<tr class="row-odd"><td>Contract</td>
+<td><a class="reference internal" href="#contract">Contract</a></td>
+<td>合约信息</td>
+</tr>
+<tr class="row-even"><td>Priv</td>
+<td><a class="reference internal" href="#priv">Priv</a></td>
+<td>账户权限</td>
+</tr>
+<tr class="row-odd"><td>Metadata</td>
+<td>[] <a class="reference internal" href="BUMO_Go_SDK Guide.html#metadata-2"><span class="std std-ref">Metadata</span></a></td>
+<td>账户</td>
+</tr>
+<tr class="row-even"><td>InitBalance</td>
+<td>int64</td>
+<td>账户资产</td>
+</tr>
+<tr class="row-odd"><td>InitInput</td>
+<td>string</td>
+<td>合约init函数的入参</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="contract">
+<h5>Contract<a class="headerlink" href="#contract" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="20%" />
+<col width="59%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Type</td>
+<td>int64</td>
+<td>合约的语种，默认不赋值</td>
+</tr>
+<tr class="row-odd"><td>Payload</td>
+<td>string</td>
+<td>对应语种的合约代码</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="metadata-2">
+<span id="id25"></span><h5>Metadata<a class="headerlink" href="#metadata-2" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="23%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Key</td>
+<td>string</td>
+<td>metadata的关键词</td>
+</tr>
+<tr class="row-odd"><td>Value</td>
+<td>string</td>
+<td>metadata的内容</td>
+</tr>
+<tr class="row-even"><td>Version</td>
+<td>int64</td>
+<td>metadata的版本</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="issueasset">
+<h5>IssueAsset<a class="headerlink" href="#issueasset" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="21%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Code</td>
+<td>string</td>
+<td>资产编码，长度[1 64]</td>
+</tr>
+<tr class="row-odd"><td>Amount</td>
+<td>int64</td>
+<td>资产数量</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="payasset">
+<h5>PayAsset<a class="headerlink" href="#payasset" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="24%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DestAddress</td>
+<td>string</td>
+<td>待转移的目标账户地址</td>
+</tr>
+<tr class="row-odd"><td>Asset</td>
+<td><a class="reference internal" href="#asset">Asset</a></td>
+<td>账户资产</td>
+</tr>
+<tr class="row-even"><td>Input</td>
+<td>string</td>
+<td>合约main函数入参</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="paycoin">
+<h5>PayCoin<a class="headerlink" href="#paycoin" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="19%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DestAddress</td>
+<td>string</td>
+<td>待转移的目标账户地址</td>
+</tr>
+<tr class="row-odd"><td>Amount</td>
+<td>int64</td>
+<td>待转移的BU数量</td>
+</tr>
+<tr class="row-even"><td>Input</td>
+<td>string</td>
+<td>合约main函数入参</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="setmetadata">
+<h5>SetMetadata<a class="headerlink" href="#setmetadata" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="21%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Key</td>
+<td>string</td>
+<td>metadata的关键词</td>
+</tr>
+<tr class="row-odd"><td>Value</td>
+<td>string</td>
+<td>metadata的内容</td>
+</tr>
+<tr class="row-even"><td>Version</td>
+<td>int64</td>
+<td>metadata的版本</td>
+</tr>
+<tr class="row-odd"><td>DeleteFlag</td>
+<td>bool</td>
+<td>是否删除metadata</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="setprivilege">
+<h5>SetPrivilege<a class="headerlink" href="#setprivilege" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="33%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MasterWeight</td>
+<td>string</td>
+<td>账户自身权重，大小[0,
+max(uint32)]</td>
+</tr>
+<tr class="row-odd"><td>Signers</td>
+<td>[] <a class="reference internal" href="#signer">Signer</a></td>
+<td>签名者权重列表</td>
+</tr>
+<tr class="row-even"><td>TxThreshold</td>
+<td>string</td>
+<td>交易门限，大小[0,
+max(int64)]</td>
+</tr>
+<tr class="row-odd"><td>TypeThreshold</td>
+<td><a class="reference internal" href="#typethreshold">TypeThreshold</a></td>
+<td>指定类型交易门限</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="log">
+<h5>Log<a class="headerlink" href="#log" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="37%" />
+<col width="37%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Topic</td>
+<td>string</td>
+<td>日志主题</td>
+</tr>
+<tr class="row-odd"><td>Data</td>
+<td>[]string</td>
+<td>日志内容</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="id26">
+<h2>区块服务<a class="headerlink" href="#id26" title="永久链接至标题">¶</a></h2>
+<p>区块服务主要是区块相关的接口，目前有11个接口：<code class="docutils literal notranslate"><span class="pre">GetNumber</span></code>、<code class="docutils literal notranslate"><span class="pre">CheckStatus</span></code>、<code class="docutils literal notranslate"><span class="pre">GetTransactions</span></code>、
+<code class="docutils literal notranslate"><span class="pre">GetInfo-block</span></code>、<code class="docutils literal notranslate"><span class="pre">GetLatest</span></code>、<code class="docutils literal notranslate"><span class="pre">GetValidators</span></code>、<code class="docutils literal notranslate"><span class="pre">GetLatestValidators</span></code>、<code class="docutils literal notranslate"><span class="pre">GetReward</span></code>、<code class="docutils literal notranslate"><span class="pre">GetLatestReward</span></code>、
+<code class="docutils literal notranslate"><span class="pre">GetFees</span></code>、<code class="docutils literal notranslate"><span class="pre">GetLatestFees</span></code>。</p>
+<div class="section" id="getnumber">
+<h3>GetNumber<a class="headerlink" href="#getnumber" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetNumber</span></code> 接口用于获取区块高度。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetNumber</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetNumberResponse</span>
+</pre></div>
+</div>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="13%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>BlockNumber</td>
+<td>int64</td>
+<td>最新的区块高度，对应底层字段seq</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="15%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetNumber</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;BlockNumber:&quot;</span><span class="p">,</span> <span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">BlockNumber</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="checkstatus">
+<h3>CheckStatus<a class="headerlink" href="#checkstatus" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">CheckStatus</span></code> 接口用于检查区块同步。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CheckStatus</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockCheckStatusResponse</span>
+</pre></div>
+</div>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="17%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>IsSynchronous</td>
+<td>bool</td>
+<td>区块是否同步</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="15%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">CheckStatus</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;IsSynchronous:&quot;</span><span class="p">,</span> <span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">IsSynchronous</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="gettransactions">
+<h3>GetTransactions<a class="headerlink" href="#gettransactions" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetTransactions</span></code> 接口用于根据高度查询交易。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetTransactions</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetTransactionRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetTransactionResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="16%" />
+<col width="55%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blockNumber</td>
+<td>int64</td>
+<td>必填，待查询的区块高度</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="43%" />
+<col width="24%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TotalCount</td>
+<td>int64</td>
+<td>返回的总交易数</td>
+</tr>
+<tr class="row-odd"><td>Transactions</td>
+<td>[] <a class="reference internal" href="#transactionhistory">TransactionHistory</a></td>
+<td>交易内容</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="13%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must be
+greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect
+to the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetTransactionRequest</span>
+<span class="n">var</span> <span class="n">blockNumber</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">581283</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlockNumber</span><span class="p">(</span><span class="n">blockNumber</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetTransactions</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Transactions</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Transactions:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getinfo-block">
+<h3>GetInfo-block<a class="headerlink" href="#getinfo-block" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetInfo-block</span></code> 接口用于获取区块信息。</p>
+<p>调用方法如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetInfo</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetInfoRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetInfoResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="18%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blockNumber</td>
+<td>int64</td>
+<td>待查询的区块高度</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="24%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CloseTime</td>
+<td>int64</td>
+<td>区块关闭时间</td>
+</tr>
+<tr class="row-odd"><td>Number</td>
+<td>int64</td>
+<td>区块高度</td>
+</tr>
+<tr class="row-even"><td>TxCount</td>
+<td>int64</td>
+<td>交易总量</td>
+</tr>
+<tr class="row-odd"><td>Version</td>
+<td>string</td>
+<td>区块版本</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="11%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must be greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetInfoRequest</span>
+<span class="n">var</span> <span class="n">blockNumber</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">581283</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlockNumber</span><span class="p">(</span><span class="n">blockNumber</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Header</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Header:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getlatest">
+<h3>GetLatest<a class="headerlink" href="#getlatest" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetLatest</span></code> 接口用于获取最新区块信息。</p>
+<p>调用方法如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetLatest</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetLatestResponse</span>
+</pre></div>
+</div>
+<p>响应数据如下表:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="24%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CloseTime</td>
+<td>int64</td>
+<td>区块关闭时间</td>
+</tr>
+<tr class="row-odd"><td>Number</td>
+<td>int64</td>
+<td>区块高度</td>
+</tr>
+<tr class="row-even"><td>TxCount</td>
+<td>int64</td>
+<td>交易总量</td>
+</tr>
+<tr class="row-odd"><td>Version</td>
+<td>string</td>
+<td>区块版本</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="15%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetLatest</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Header</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Header:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getvalidators">
+<h3>GetValidators<a class="headerlink" href="#getvalidators" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetValidators</span></code> 接口用于获取指定区块中所有验证节点数。</p>
+<p>调用方法如下:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetValidators</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetValidatorsRequest</span><span class="p">)</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetValidatorsResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="18%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blockNumber</td>
+<td>int64</td>
+<td>待查询的区块高度</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="46%" />
+<col width="29%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>validators</td>
+<td>[] <a class="reference internal" href="#validatorinfo">ValidatorInfo</a></td>
+<td>验证节点列表</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="44%" />
+<col width="13%" />
+<col width="43%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must be
+greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetValidatorsRequest</span>
+<span class="n">var</span> <span class="n">blockNumber</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">581283</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlockNumber</span><span class="p">(</span><span class="n">blockNumber</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetValidators</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Validators</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Validators:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id27">
+<h4>接口对象类型参考<a class="headerlink" href="#id27" title="永久链接至标题">¶</a></h4>
+<div class="section" id="validatorinfo">
+<h5>ValidatorInfo<a class="headerlink" href="#validatorinfo" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="20%" />
+<col width="35%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Address</td>
+<td>String</td>
+<td>共识节点地址</td>
+</tr>
+<tr class="row-odd"><td>PledgeCoinAmount</td>
+<td>int64</td>
+<td>验证节点押金</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="getlatestvalidators">
+<h3>GetLatestValidators<a class="headerlink" href="#getlatestvalidators" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetLatestValidators</span></code> 接口用于获取最新区块中所有验证节点数。</p>
+<p>调用方法如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetLatestValidators</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetLatestValidatorsResponse</span>
+</pre></div>
+</div>
+<p>响应数据如下表:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="47%" />
+<col width="29%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>validators</td>
+<td>[] <a class="reference internal" href="#validatorinfo">ValidatorInfo</a></td>
+<td>验证节点列表</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="13%" />
+<col width="44%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must
+be greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetLatestValidators</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Validators</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Validators:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getreward">
+<h3>GetReward<a class="headerlink" href="#getreward" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetReward</span></code> 接口用于获取指定区块中的区块奖励和验证节点奖励。</p>
+<p>调用方法如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetReward</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetRewardRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetRewardResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="16%" />
+<col width="55%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blockNumber</td>
+<td>int64</td>
+<td>必填，待查询的区块高度</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="37%" />
+<col width="28%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>BlockReward</td>
+<td>int64</td>
+<td>区块奖励数</td>
+</tr>
+<tr class="row-odd"><td>ValidatorsReward</td>
+<td>[] <a class="reference internal" href="#validatorreward">ValidatorReward</a></td>
+<td>验证节点奖励情况</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="11%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must be greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetRewardRequest</span>
+<span class="n">var</span> <span class="n">blockNumber</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">581283</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlockNumber</span><span class="p">(</span><span class="n">blockNumber</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetReward</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;ValidatorsReward:&quot;</span><span class="p">,</span> <span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">ValidatorsReward</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id28">
+<h4>接口对象类型参考<a class="headerlink" href="#id28" title="永久链接至标题">¶</a></h4>
+<div class="section" id="validatorreward">
+<h5>ValidatorReward<a class="headerlink" href="#validatorreward" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="24%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Validator</td>
+<td>String</td>
+<td>验证节点地址</td>
+</tr>
+<tr class="row-odd"><td>Reward</td>
+<td>int64</td>
+<td>验证节点奖励</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="getlatestreward">
+<h3>GetLatestReward<a class="headerlink" href="#getlatestreward" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetLatestReward</span></code> 接口用于获取最新区块中的区块奖励和验证节点奖励。</p>
+<p>调用方法如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetLatestReward</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetLatestRewardResponse</span>
+</pre></div>
+</div>
+<p>响应数据如下表:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="35%" />
+<col width="32%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>BlockReward</td>
+<td>int64</td>
+<td>区块奖励数</td>
+</tr>
+<tr class="row-odd"><td>ValidatorsReward</td>
+<td>[] <a class="reference internal" href="#validatorreward">ValidatorReward</a></td>
+<td>验证节点奖励情况</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="15%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetLatestReward</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;ValidatorsReward:&quot;</span><span class="p">,</span> <span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">ValidatorsReward</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getfees">
+<h3>GetFees<a class="headerlink" href="#getfees" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetFees</span></code> 接口用于获取指定区块中的账户最低资产限制和打包费用。</p>
+<p>调用方法如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetFees</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">BlockGetFeesRequest</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetFeesResponse</span>
+</pre></div>
+</div>
+<p>请求参数如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="16%" />
+<col width="55%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>blockNumber</td>
+<td>int64</td>
+<td>必填，待查询的区块高度</td>
+</tr>
+</tbody>
+</table>
+<p>响应数据如下表:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="50%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Fees</td>
+<td><a class="reference internal" href="#fees">Fees</a></td>
+<td>费用</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="12%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>INVALID_BLOCKNUMBER_ERROR</td>
+<td>11060</td>
+<td>BlockNumber must
+be greater than 0</td>
+</tr>
+<tr class="row-odd"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-even"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">reqData</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetFeesRequest</span>
+<span class="n">var</span> <span class="n">blockNumber</span> <span class="n">int64</span> <span class="o">=</span> <span class="mi">581283</span>
+<span class="n">reqData</span><span class="o">.</span><span class="n">SetBlockNumber</span><span class="p">(</span><span class="n">blockNumber</span><span class="p">)</span>
+<span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetFees</span><span class="p">(</span><span class="n">reqData</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Fees</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Fees:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id29">
+<h4>接口对象类型参考<a class="headerlink" href="#id29" title="永久链接至标题">¶</a></h4>
+<div class="section" id="fees">
+<h5>Fees<a class="headerlink" href="#fees" title="永久链接至标题">¶</a></h5>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="13%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">成员变量</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>BaseReserve</td>
+<td>int64</td>
+<td>账户最低资产限制</td>
+</tr>
+<tr class="row-odd"><td>GasPrice</td>
+<td>int64</td>
+<td>打包费用，单位MO，1 BU = 10^8 MO</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="getlatestfees">
+<h3>GetLatestFees<a class="headerlink" href="#getlatestfees" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GetLatestFees</span></code> 接口用于获取最新区块中的账户最低资产限制和打包费用。</p>
+<p>调用方法如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GetLatestFees</span><span class="p">()</span> <span class="n">model</span><span class="o">.</span><span class="n">BlockGetLatestFeesResponse</span>
+</pre></div>
+</div>
+<p>响应数据如下表:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="60%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">类型</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Fees</td>
+<td><a class="reference internal" href="#fees">fees</a></td>
+<td>费用</td>
+</tr>
+</tbody>
+</table>
+<p>错误码如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="15%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">异常</th>
+<th class="head">错误码</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CONNECTNETWORK_ERROR</td>
+<td>11007</td>
+<td>Failed to connect to
+the network</td>
+</tr>
+<tr class="row-odd"><td>SYSTEM_ERROR</td>
+<td>20000</td>
+<td>System error</td>
+</tr>
+</tbody>
+</table>
+<p>具体示例如下所示:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resData</span> <span class="p">:</span><span class="o">=</span> <span class="n">testSdk</span><span class="o">.</span><span class="n">Block</span><span class="o">.</span><span class="n">GetLatestFees</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">resData</span><span class="o">.</span><span class="n">ErrorCode</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="p">:</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">resData</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">Fees</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Fees:&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id30">
+<h2>错误码<a class="headerlink" href="#id30" title="永久链接至标题">¶</a></h2>
+<p>公共错误码信息如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>11001</td>
+<td>Create account failed.</td>
+</tr>
+<tr class="row-odd"><td>11002</td>
+<td>Invalid sourceAddress.</td>
+</tr>
+<tr class="row-even"><td>11003</td>
+<td>Invalid destAddress.</td>
+</tr>
+<tr class="row-odd"><td>11004</td>
+<td>InitBalance must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11005</td>
+<td>SourceAddress cannot be equal to destAddress.</td>
+</tr>
+<tr class="row-odd"><td>11006</td>
+<td>Invalid address.</td>
+</tr>
+<tr class="row-even"><td>11007</td>
+<td>Failed to connect to the network.</td>
+</tr>
+<tr class="row-odd"><td>11008</td>
+<td>AssetAmount to be issued must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11009</td>
+<td>The account does not have this asset.</td>
+</tr>
+<tr class="row-odd"><td>11010</td>
+<td>The account does not have this metadata.</td>
+</tr>
+<tr class="row-even"><td>11011</td>
+<td>The length of key must be between 1 and 1024.</td>
+</tr>
+<tr class="row-odd"><td>11012</td>
+<td>The length of value must be between 0 and 256k.</td>
+</tr>
+<tr class="row-even"><td>11013</td>
+<td>The version must be greater than or equal to 0.</td>
+</tr>
+<tr class="row-odd"><td>11015</td>
+<td>MasterWeight must be between 0 and max(uint32).</td>
+</tr>
+<tr class="row-even"><td>11016</td>
+<td>Invalid signer address.</td>
+</tr>
+<tr class="row-odd"><td>11017</td>
+<td>Signer weight must be between 0 and max(uint32).</td>
+</tr>
+<tr class="row-even"><td>11018</td>
+<td>TxThreshold must be between 0 and max(int64).</td>
+</tr>
+<tr class="row-odd"><td>11019</td>
+<td>Type of TypeThreshold is invalid.</td>
+</tr>
+<tr class="row-even"><td>11020</td>
+<td>TypeThreshold must be between 0 and max(int64).</td>
+</tr>
+<tr class="row-odd"><td>11023</td>
+<td>The length of code must be between 1 and 64.</td>
+</tr>
+<tr class="row-even"><td>11024</td>
+<td>AssetAmount must be between 0 and max(int64).</td>
+</tr>
+<tr class="row-odd"><td>11026</td>
+<td>BuAmount must be between 0 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11027</td>
+<td>Invalid issuer address.</td>
+</tr>
+<tr class="row-odd"><td>11030</td>
+<td>The length of ctp must be between 1 and 64.</td>
+</tr>
+<tr class="row-even"><td>11031</td>
+<td>The length of token name must be between 1 and 1024.</td>
+</tr>
+<tr class="row-odd"><td>11032</td>
+<td>The length of symbol must be between 1 and 1024.</td>
+</tr>
+<tr class="row-even"><td>11033</td>
+<td>Decimals must be between 0 and 8.</td>
+</tr>
+<tr class="row-odd"><td>11034</td>
+<td>TotalSupply must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11035</td>
+<td>Invalid token owner.</td>
+</tr>
+<tr class="row-odd"><td>11036</td>
+<td>Failed to get allowance.</td>
+</tr>
+<tr class="row-even"><td>11037</td>
+<td>Invalid contract address.</td>
+</tr>
+<tr class="row-odd"><td>11038</td>
+<td>contractAddress is not a contract account.</td>
+</tr>
+<tr class="row-even"><td>11039</td>
+<td>Amount must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-odd"><td>11040</td>
+<td>SourceAddress cannot be equal to contractAddress.</td>
+</tr>
+<tr class="row-even"><td>11041</td>
+<td>Invalid fromAddress.</td>
+</tr>
+<tr class="row-odd"><td>11042</td>
+<td>FromAddress cannot be equal to destAddress.</td>
+</tr>
+<tr class="row-even"><td>11043</td>
+<td>Invalid spender.</td>
+</tr>
+<tr class="row-odd"><td>11045</td>
+<td>The length of log topic must be between 1 and 128.</td>
+</tr>
+<tr class="row-even"><td>11046</td>
+<td>The length of log data must be between 1 and 1024.</td>
+</tr>
+<tr class="row-odd"><td>11048</td>
+<td>Nonce must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11049</td>
+<td>GasPrice must be between 1000 and max(int64).</td>
+</tr>
+<tr class="row-odd"><td>11050</td>
+<td>FeeLimit must be between 1 and max(int64).</td>
+</tr>
+<tr class="row-even"><td>11051</td>
+<td>Operations cannot be empty.</td>
+</tr>
+<tr class="row-odd"><td>11052</td>
+<td>CeilLedgerSeq must be greater than or equal to 0.</td>
+</tr>
+<tr class="row-even"><td>11053</td>
+<td>One of the operations cannot be resolved.</td>
+</tr>
+<tr class="row-odd"><td>11054</td>
+<td>SignatureNumber must be between 1 and max(int32).</td>
+</tr>
+<tr class="row-even"><td>11055</td>
+<td>Invalid transaction hash.</td>
+</tr>
+<tr class="row-odd"><td>11056</td>
+<td>Invalid blob.</td>
+</tr>
+<tr class="row-even"><td>11057</td>
+<td>PrivateKeys cannot be empty.</td>
+</tr>
+<tr class="row-odd"><td>11058</td>
+<td>One of the privateKeys is invalid.</td>
+</tr>
+<tr class="row-even"><td>11060</td>
+<td>BlockNumber must be greater than 0.</td>
+</tr>
+<tr class="row-odd"><td>11062</td>
+<td>Url cannot be empty.</td>
+</tr>
+<tr class="row-even"><td>11063</td>
+<td>ContractAddress and code cannot be empty at the same time.</td>
+</tr>
+<tr class="row-odd"><td>11064</td>
+<td>OptType must be between 0 and 2.</td>
+</tr>
+<tr class="row-even"><td>11065</td>
+<td>Failed to get allowance.</td>
+</tr>
+<tr class="row-odd"><td>11067</td>
+<td>The signatures cannot be empty.</td>
+</tr>
+<tr class="row-even"><td>11066</td>
+<td>Failed to get token info.</td>
+</tr>
+<tr class="row-odd"><td>20000</td>
+<td>System error.</td>
+</tr>
+</tbody>
+</table>
+<p>Go错误码信息如下表：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">参数</th>
+<th class="head">描述</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>14000</td>
+<td>The function <cite>GetEncPublicKey</cite> failed.</td>
+</tr>
+<tr class="row-odd"><td>14001</td>
+<td>The function <cite>Sign</cite> failed.</td>
+</tr>
+<tr class="row-even"><td>14002</td>
+<td>The parameter <cite>payload</cite> is invalid.</td>
+</tr>
+<tr class="row-odd"><td>14003</td>
+<td>The query failed.</td>
+</tr>
+<tr class="row-even"><td>14004</td>
+<td>No results.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">TRY</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="转向" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, bopol.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/BUMO GO SDK指南.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
