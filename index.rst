@@ -13,4 +13,4 @@
    :maxdepth: 1
    :caption: 中文文档 
 
-   CN/index
+   zh_CN/index
