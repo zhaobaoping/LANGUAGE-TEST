@@ -5,4 +5,4 @@
 
 
 
-  BUMO GO SDK指南
+  BUMO GO SDK指南.html
